@@ -4,7 +4,7 @@
 TrilatNode::TrilatNode() : nh(ros::this_node::getName())
 {
 	// Initialize marker publisher
-	markerPub = nh.advertise<visualization_msgs::Marker>("visualization_marker", 1000);
+	markerPub = nh.advertise<visualization_msgs::Marker>("/visualization_marker", 1000);
 }
 
 TrilatNode::~TrilatNode() {}

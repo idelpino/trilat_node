@@ -8,7 +8,7 @@
 //in RVIZ:
 //	1) global opt -> fixed frame: my_frame
 //	2) add -> marker
-//	3) marker topic: trilat_node/visualization_marker
+//	3) marker topic: /visualization_marker
 
 
 
