@@ -21,6 +21,9 @@ protected:
 	// Publisher
 	ros::Publisher markerPub;
 
+	// Result of the trilateration
+	Receiver estReceiver;
+
 public:
 	//constructor
 	TrilatNode();
@@ -29,11 +32,17 @@ public:
 	~TrilatNode();
 
 	//execute point tracker
-	void process();
+	void process(const std::vector<SatelliteMeasurement> &measurements, const double speed);
 
-	void publishMarker();
+	void publishSatellites(const std::vector<SatelliteMeasurement> &measurements);
+	void publishSatellites(const std::vector<Point<double>> &sats);
 
-	visualization_msgs::Marker createMarker(Point<double> coords);
+	void publishRealReceiver(Receiver r);
+
+	void publishEstReceiver();
+
+private:
+	void publishSatellite(const Point<double> &coords, int i);
 
 };
 

@@ -18,7 +18,12 @@
 #include "trilat_node.h"
 #include "glog/logging.h"
 
-//bool parseArgs(int argc, char** argv, Receiver &realReceiver, vector<Point<double> > &satellites, double &std_dev);
+bool parseArgs(int argc, char** argv, Receiver &realReceiver, std::vector<Point<double> > &satellites, double &std_dev);
+
+// Default values
+const Receiver DEF_REAL_RECEIVER = {Point<double>(0, 0, 0), 100e-9};
+const double DEF_STD_DEV = 1e-9;
+const double SPEED_OF_LIGHT = 3e8; // m / s
 
 
 //node main
@@ -30,6 +35,18 @@ int main(int argc, char **argv)
 	//init google logging
 	google::InitGoogleLogging(argv[0]);
 
+	//parse arguments
+	double std_dev = DEF_STD_DEV;
+	Receiver realReceiver = DEF_REAL_RECEIVER;
+	std::vector<Point<double>> satellites;
+
+	if(!parseArgs(argc, argv, realReceiver, satellites, std_dev))
+	{
+		std::cout << "Input is not valid\n";
+		return -1;
+	}
+
+	// Trilateration node
 	TrilatNode trNode;
 
 	ros::Rate loopRate(1);
@@ -37,10 +54,21 @@ int main(int argc, char **argv)
 	//node loop
 	while ( ros::ok() )
 	{
+		// Move the real receiver
+		realReceiver.coords = realReceiver.coords + (Point<double>(0, 0, 1));
+		std::cout << "Reale: " << realReceiver.toString() << "\n";
+
+		// Simulate measurements between target (known) and satellites
+		std::vector<SatelliteMeasurement> measurements =
+			Trilateration::simulateMeasurements(realReceiver, satellites, std_dev, SPEED_OF_LIGHT);
+
 
 		//do things
-		trNode.process();
-		trNode.publishMarker();
+		trNode.process(measurements, SPEED_OF_LIGHT);
+
+		trNode.publishSatellites(satellites);
+		trNode.publishRealReceiver(realReceiver);
+		trNode.publishEstReceiver();
 
 		//execute pending callbacks
 //		ros::spinOnce();
@@ -55,10 +83,10 @@ int main(int argc, char **argv)
 
 
 
-/*
+
 //TODO boost gives a nice parser
 //TODO metti tutte le funzioni parser in un file esterno se e' possibile (o in una classe)
-bool parseArgs(int argc, char** argv, Receiver &realReceiver, vector<Point<double>> &satellites, double &std_dev)
+bool parseArgs(int argc, char** argv, Receiver &realReceiver, std::vector<Point<double>> &satellites, double &std_dev)
 {
 	bool receiver_setted = false;
 	int n_satellites = 0;
@@ -95,4 +123,4 @@ bool parseArgs(int argc, char** argv, Receiver &realReceiver, vector<Point<doubl
 	// TODO check if input is well formed
 
 	return receiver_setted && (n_satellites >= 3);
-}*/
+}
