@@ -7,7 +7,8 @@ ReceiverSimNode::ReceiverSimNode(Receiver r):
 {
 	// Initialize measurements publisher
 	// TODO for now i work with strings
-	measurementsPub = nh.advertise<std_msgs::String>("/gps_measurements", 1000);
+	// measurementsPub = nh.advertise<std_msgs::String>("/gps_measurements", 1000);
+	measurementsPub = nh.advertise<trilateration::satMeasurementArray>("/gps_measurements", 1000);
 
 	// Initialize real position publisher
 	markerPub = nh.advertise<visualization_msgs::Marker>("/visualization_marker", 1000);
@@ -30,15 +31,22 @@ void ReceiverSimNode::simulateMeasurements(const std::vector<Point<double>> sate
 void ReceiverSimNode::publishMeasurements()
 {
 	std::cout << "Publishing measurements\n";
-	std_msgs::String msg;
 
-	std::stringstream ss;
 
-	ss << "MEASUREMENTS:\n";
+	trilateration::satMeasurement meas;
+	trilateration::satMeasurementArray msg;
+
+	meas.x = 1;
+
+
 	for (int i = 0; i < measurements.size(); ++i) {
-		ss << i << ")\t" << measurements.at(i).toString() << std::endl;
+		meas.x = measurements.at(i).coords.getX();
+		meas.y = measurements.at(i).coords.getY();
+		meas.z = measurements.at(i).coords.getZ();
+		meas.pseudorange = measurements.at(i).pseudorange;
+
+		msg.measurements.push_back(meas);
 	}
-	msg.data = ss.str();
 
 	measurementsPub.publish(msg);
 }

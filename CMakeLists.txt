@@ -17,12 +17,32 @@ endif()
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   visualization_msgs
+  std_msgs #TODO serve?
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
 find_package(Ceres REQUIRED)
 
-catkin_package()
+# Generate messages in the 'msg' folder
+add_message_files(
+   FILES
+   satMeasurement.msg
+   satMeasurementArray.msg
+)
+
+# Generate added messages and services with any dependencies listed here
+generate_messages(
+   DEPENDENCIES
+   std_msgs
+)
+
+
+
+
+catkin_package(
+  CATKIN_DEPENDS message_runtime
+)
 
 
 ###############

@@ -10,6 +10,23 @@ const double SPEED_OF_LIGHT = 3e8; // m / s
 
 bool parseArgs(int argc, char** argv, Receiver &realReceiver, std::vector<Point<double> > &satellites, double &std_dev);
 
+
+
+/*
+ * TODO
+ * fai il reader
+ *
+ * ARRAY DI MSGS CUSTOM
+ *
+ *
+ * http://answers.ros.org/question/60614/how-to-publish-a-vector-of-unknown-length-of-structs-in-ros/
+ */
+
+
+
+
+
+
 //node main
 int main(int argc, char **argv)
 {

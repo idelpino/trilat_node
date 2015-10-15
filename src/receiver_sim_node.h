@@ -5,6 +5,9 @@
 #include <visualization_msgs/Marker.h>
 
 #include "std_msgs/String.h"
+#include "trilateration/satMeasurement.h"
+#include "trilateration/satMeasurementArray.h"
+
 /* TODO
  * devo farmi il mio messaggio particolare
  * vettore di measurement
