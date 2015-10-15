@@ -2,16 +2,18 @@
 #define RECEIVERSIMNODE_H
 
 #include <ros/ros.h>
+#include <visualization_msgs/Marker.h>
+
 #include "std_msgs/String.h"
 /* TODO
  * devo farmi il mio messaggio particolare
- * vettore ci measurement
- *
+ * vettore di measurement
  */
 
 #include "../include/trilateration/src/Trilateration.h"
 #include "../include/trilateration/src/structs.h"
 
+//TODO sistema. sta variabile c'e' sia nel main che nella classe
 const Receiver DEF_REAL_RECEIVER = {Point<double>(0, 0, 0), 100e-9};
 
 class ReceiverSimNode
@@ -24,9 +26,11 @@ protected:
 	// ROS node handle
 	ros::NodeHandle nh;
 
-	// Publisher of measurements
+	// Publisher for measurements
 	ros::Publisher measurementsPub;
-	//TODO publisher of real gps position tu rviz
+
+	// Publisher for real position of the receiver
+	ros::Publisher markerPub;
 
 
 public:

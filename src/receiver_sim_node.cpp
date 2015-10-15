@@ -7,7 +7,10 @@ ReceiverSimNode::ReceiverSimNode(Receiver r):
 {
 	// Initialize measurements publisher
 	// TODO for now i work with strings
-	measurementsPub = nh.advertise<std_msgs::String>("gps_measurements", 1000);
+	measurementsPub = nh.advertise<std_msgs::String>("/gps_measurements", 1000);
+
+	// Initialize real position publisher
+	markerPub = nh.advertise<visualization_msgs::Marker>("/visualization_marker", 1000);
 
 }
 
@@ -26,6 +29,7 @@ void ReceiverSimNode::simulateMeasurements(const std::vector<Point<double>> sate
 
 void ReceiverSimNode::publishMeasurements()
 {
+	std::cout << "Publishing measurements\n";
 	std_msgs::String msg;
 
 	std::stringstream ss;
@@ -36,22 +40,12 @@ void ReceiverSimNode::publishMeasurements()
 	}
 	msg.data = ss.str();
 
-	std::cout << "Publishing\n";
 	measurementsPub.publish(msg);
 }
 
 void ReceiverSimNode::publishRealReceiver()
 {
-//	TODO
-	std::cout << ">> publishRealReceiver() TODO\n";
-
-/* TODO
- * aggiungi un nuovo publisher per questo topic
- * inizializzalo nel costruttore
- * includi msgs Marker
- *
- * creazione del marker
- * pubblicalo
+	std::cout << "Publishing real receiver\n";
 
 	visualization_msgs::Marker m;
 	m.header.frame_id = "my_frame";
@@ -59,8 +53,8 @@ void ReceiverSimNode::publishRealReceiver()
 
 	// Set the namespace and id for this marker.  This serves to create a unique ID
 	// Any marker sent with the same namespace and id will overwrite the old one
-	m.ns = "receiver";
-	m.id = 1;
+	m.ns = "receiver_real";
+	m.id = 0;
 
 	// Set the marker type.
 	m.type = visualization_msgs::Marker::SPHERE;
@@ -69,9 +63,9 @@ void ReceiverSimNode::publishRealReceiver()
 	m.action = visualization_msgs::Marker::ADD;
 
 	// Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
-	m.pose.position.x = r.coords.getX();
-	m.pose.position.y = r.coords.getY();
-	m.pose.position.z = r.coords.getZ();
+	m.pose.position.x = realRec.coords.getX();
+	m.pose.position.y = realRec.coords.getY();
+	m.pose.position.z = realRec.coords.getZ();
 	m.pose.orientation.x = 0.0;
 	m.pose.orientation.y = 0.0;
 	m.pose.orientation.z = 0.0;
@@ -90,9 +84,7 @@ void ReceiverSimNode::publishRealReceiver()
 
 	m.lifetime = ros::Duration();
 
-	markerPub.publish(m);*/
-
-
+	markerPub.publish(m);
 
 }
 
