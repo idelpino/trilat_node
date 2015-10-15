@@ -16,7 +16,6 @@
 
 //ros dependencies
 #include "trilat_node.h"
-#include "glog/logging.h"
 
 bool parseArgs(int argc, char** argv, Receiver &realReceiver, std::vector<Point<double> > &satellites, double &std_dev);
 
@@ -31,9 +30,6 @@ int main(int argc, char **argv)
 {
 	//init ros
 	ros::init(argc, argv, "trilat_node");
-
-	//init google logging
-	google::InitGoogleLogging(argv[0]);
 
 	//parse arguments
 	double std_dev = DEF_STD_DEV;

@@ -76,6 +76,11 @@ void TrilatNode::publishSatellite(const Point<double> &coords, int i)
 	markerPub.publish(m);
 }
 
+/* TODO
+ * metti il marker come variabile privata della classe,
+ * la inizializzi con il costruttore
+ * quando ricalcoli, aggiorni solo le coordinate
+ */
 void TrilatNode::publishRealReceiver(Receiver r)
 {
 	visualization_msgs::Marker m;
