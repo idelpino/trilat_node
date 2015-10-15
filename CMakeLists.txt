@@ -33,10 +33,17 @@ catkin_package()
 SET(SRCS_TR_LIB
 	include/trilateration/src/Trilateration.cpp
 )
-##SRCS files. ROS node
-SET(SRCS_ROS_NODE
-    src/trilat_node.cpp
-    src/trilat_main.cpp
+
+##SRCS files. ROS receiver simulator node
+SET(SRCS_ROS_REC_SIM_NODE
+	src/receiver_sim_node.cpp
+	src/receiver_sim_main.cpp
+)
+
+##SRCS files. ROS trilaterate node
+SET(SRCS_ROS_TRILAT_NODE
+	src/trilat_node.cpp
+	src/trilat_main.cpp
 )
 
 
@@ -53,5 +60,8 @@ include_directories(
 )
 
 ## cpp executable
-add_executable(trilat_node ${SRCS_ROS_NODE} ${SRCS_TR_LIB})
+add_executable(receiver_sim_node ${SRCS_ROS_REC_SIM_NODE} ${SRCS_TR_LIB})
+target_link_libraries(receiver_sim_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
+
+add_executable(trilat_node ${SRCS_ROS_TRILAT_NODE} ${SRCS_TR_LIB})
 target_link_libraries(trilat_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
