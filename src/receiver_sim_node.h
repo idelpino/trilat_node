@@ -20,9 +20,10 @@
 class ReceiverSimNode
 {
 protected:
-	// contains coords and bias of the true receiver
+	// Contains coords and bias of the true receiver
 	Receiver realRec;
-	// measure obtained from satellites (simulated)
+
+	// Measure obtained from satellites (simulated)
 	std::vector<SatelliteMeasurement> measurements;
 
 
@@ -43,6 +44,7 @@ public:
 	//destructor
 	~ReceiverSimNode();
 
+	// Move the sensor
 	void move();
 
 	void simulateMeasurements(const std::vector<Point<double>> satellites, const double std_dev, const double speed);

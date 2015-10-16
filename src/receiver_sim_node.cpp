@@ -22,6 +22,8 @@ void ReceiverSimNode::move()
 
 	/*TODO
 	 * potrei fare che muovendosi trova nuovi satelliti e ne perde altri
+	 *
+	 * potrei fare un movimento piu' sensato
 	 */
 }
 
@@ -34,12 +36,8 @@ void ReceiverSimNode::publishMeasurements()
 {
 	std::cout << "Publishing measurements\n";
 
-
 	trilateration::satMeasurement meas;
 	trilateration::satMeasurementArray msg;
-
-	meas.x = 1;
-
 
 	for (int i = 0; i < measurements.size(); ++i) {
 		meas.x = measurements.at(i).coords.getX();

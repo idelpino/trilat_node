@@ -13,8 +13,8 @@ TrilaterationNode::~TrilaterationNode() { }
 void TrilaterationNode::measurementsCallback(const trilateration::satMeasurementArray::ConstPtr &msg)
 {
 	std::cout << "New measurement received\n";
-	//std::vector<SatelliteMeasurement> v;
 
+	// Delete old measurements
 	measurements.clear();
 
 	for (int i = 0; i < msg->measurements.size(); ++i) {
@@ -28,7 +28,6 @@ void TrilaterationNode::measurementsCallback(const trilateration::satMeasurement
 		};
 
 		measurements.push_back(m);
-
 	}
 
 	process();
@@ -40,9 +39,8 @@ void TrilaterationNode::process()
 	estReceiver = tr.computePosition(measurements, SPEED_OF_LIGHT);
 	std::cout << " ---> Estimated receiver:\t" << estReceiver.toString() << std::endl;
 
-	// in the next simulation, the guess is the actual position
+	// Sets the guess for the next simulation in the actual position
 	tr.setInitialReceiverGuess(estReceiver);
-
 
 	publishSatellites();
 	publishEstReceiver();

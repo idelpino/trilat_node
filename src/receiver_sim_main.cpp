@@ -11,22 +11,6 @@ const double SPEED_OF_LIGHT = 3e8; // m / s
 bool parseArgs(int argc, char** argv, Receiver &realReceiver, std::vector<Point<double> > &satellites, double &std_dev);
 
 
-
-/*
- * TODO
- * fai il reader
- *
- * ARRAY DI MSGS CUSTOM
- *
- *
- * http://answers.ros.org/question/60614/how-to-publish-a-vector-of-unknown-length-of-structs-in-ros/
- */
-
-
-
-
-
-
 //node main
 int main(int argc, char **argv)
 {
@@ -34,7 +18,7 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "receiver_sim_node");
 
 	//parse arguments
-	double std_dev = DEF_STD_DEV; //todo e il bias? se manca qui manca anche nello scorso nodo
+	double std_dev = DEF_STD_DEV;
 	Receiver realReceiver = DEF_REAL_RECEIVER;
 	std::vector<Point<double>> satellites;
 
