@@ -1,4 +1,15 @@
-
+/*
+ * USAGE
+ *
+ * -- To run the gps receiver simulator
+ * rosrun trilateration receiver_sim_node  -r 3 -3 2 -s 15 26 40 -s 1 -32 50 -s - -8 70 -s 24 73 56 -s -99 -66 708
+ *
+ * -- To run the trilateration node
+ * rosrun trilateration trilateration_node
+ *
+ * -- To visualize results
+ * rosrun rviz rviz
+ */
 #include <vector>
 #include "trilateration_node.h"
 
@@ -12,21 +23,7 @@ int main(int argc, char **argv)
 	// Trilateration node
 	TrilaterationNode trNode;
 
-	ros::spin();// TODO provv
-/*
-	ros::Rate loopRate(1);
-	//node loop
-	while ( ros::ok() )
-	{
-		//do things
-
-		//execute pending callbacks
-		ros::spinOnce();
-
-		//relax to fit output rate
-		loopRate.sleep();
-	}*/
-
+	ros::spin();
 	//exit program
 	return 0;
 }

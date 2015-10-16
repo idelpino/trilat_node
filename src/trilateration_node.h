@@ -10,6 +10,8 @@
 #include "../include/trilateration/src/Trilateration.h"
 #include "../include/trilateration/src/structs.h"
 
+//TODO gestisci discorso velocita
+const double SPEED_OF_LIGHT = 3e8; // m / s
 
 class TrilaterationNode
 {
@@ -23,11 +25,15 @@ protected:
 	// Received measurements
 	std::vector<SatelliteMeasurement> measurements;
 
+
 	// ROS node handle
 	ros::NodeHandle nh;
 
-	// Subscriber for measurements
+	// Subscriber (measurements)
 	ros::Subscriber measurementSub;
+
+	// Publisher (markers)
+	ros::Publisher markerPub;
 
 public:
 	TrilaterationNode();
@@ -35,7 +41,11 @@ public:
 
 	void measurementsCallback(const trilateration::satMeasurementArray::ConstPtr &msg);
 
+protected:
+	void process();
 
+	void publishEstReceiver();
+	void publishSatellites();
 };
 
 #endif // TRILATERATION_NODE_H
