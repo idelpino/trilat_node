@@ -89,11 +89,11 @@ include_directories(
 add_executable(receiver_sim_node ${SRCS_ROS_REC_SIM_NODE} ${SRCS_TR_LIB})
 target_link_libraries(receiver_sim_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
 
-add_executable(trilat_node ${SRCS_ROS_TRILAT_NODE} ${SRCS_TR_LIB})
-target_link_libraries(trilat_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
 
 add_executable(trilateration_node ${SRCS_ROS_TRILATERATION_NODE} ${SRCS_TR_LIB})
 target_link_libraries(trilateration_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
 
-
+## old stuff
+#add_executable(trilat_node ${SRCS_ROS_TRILAT_NODE} ${SRCS_TR_LIB})
+#target_link_libraries(trilat_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
 
