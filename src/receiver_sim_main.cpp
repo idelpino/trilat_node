@@ -4,7 +4,7 @@
 
 #include "receiver_sim_node.h"
 
-//const Receiver DEF_REAL_RECEIVER = {Point<double>(), 100e-9};
+const Receiver DEF_REAL_RECEIVER = {Point<double>(), 100e-9};
 const double DEF_STD_DEV = 1e-9;
 const double SPEED_OF_LIGHT = 3e8; // m / s
 

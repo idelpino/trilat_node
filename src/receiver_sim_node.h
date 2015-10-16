@@ -16,13 +16,13 @@
 #include "../include/trilateration/src/Trilateration.h"
 #include "../include/trilateration/src/structs.h"
 
-//TODO sistema. sta variabile c'e' sia nel main che nella classe
-const Receiver DEF_REAL_RECEIVER = {Point<double>(0, 0, 0), 100e-9};
 
 class ReceiverSimNode
 {
 protected:
-	Receiver realRec; // contains coords and true bias
+	// contains coords and bias of the true receiver
+	Receiver realRec;
+	// measure obtained from satellites (simulated)
 	std::vector<SatelliteMeasurement> measurements;
 
 
@@ -38,7 +38,7 @@ protected:
 
 public:
 	//constructor
-	ReceiverSimNode(Receiver r = DEF_REAL_RECEIVER);
+	ReceiverSimNode(Receiver r = {Point<double>(0, 0, 0), 100e-9});
 
 	//destructor
 	~ReceiverSimNode();

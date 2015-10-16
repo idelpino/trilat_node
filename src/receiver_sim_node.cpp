@@ -6,8 +6,6 @@ ReceiverSimNode::ReceiverSimNode(Receiver r):
 	realRec(r)		// Initialize receiver with default value
 {
 	// Initialize measurements publisher
-	// TODO for now i work with strings
-	// measurementsPub = nh.advertise<std_msgs::String>("/gps_measurements", 1000);
 	measurementsPub = nh.advertise<trilateration::satMeasurementArray>("/gps_measurements", 1000);
 
 	// Initialize real position publisher
@@ -21,6 +19,10 @@ void ReceiverSimNode::move()
 {
 	realRec.coords = realRec.coords + Point<double>(0, 0, 1);
 	std::cout << "Real receiver moved to: " << realRec.toString() << "\n";
+
+	/*TODO
+	 * potrei fare che muovendosi trova nuovi satelliti e ne perde altri
+	 */
 }
 
 void ReceiverSimNode::simulateMeasurements(const std::vector<Point<double>> satellites, const double std_dev, const double speed)

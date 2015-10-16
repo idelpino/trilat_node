@@ -1,5 +1,5 @@
-#ifndef TRILATERATION_NODE_H
-#define TRILATERATION_NODE_H
+#ifndef TRILAT_NODE_H
+#define TRILAT_NODE_H
 
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
@@ -46,4 +46,4 @@ private:
 
 };
 
-#endif // TRILATERATION_NODE_H
+#endif // TRILAT_NODE_H

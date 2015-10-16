@@ -24,14 +24,14 @@ find_package(catkin REQUIRED COMPONENTS
 ## System dependencies are found with CMake's conventions
 find_package(Ceres REQUIRED)
 
-# Generate messages in the 'msg' folder
+## Generate messages in the 'msg' folder
 add_message_files(
    FILES
    satMeasurement.msg
    satMeasurementArray.msg
 )
 
-# Generate added messages and services with any dependencies listed here
+## Generate added messages and services with any dependencies listed here
 generate_messages(
    DEPENDENCIES
    std_msgs
@@ -60,10 +60,16 @@ SET(SRCS_ROS_REC_SIM_NODE
 	src/receiver_sim_main.cpp
 )
 
-##SRCS files. ROS trilaterate node
+##SRCS files. ROS trilat node
 SET(SRCS_ROS_TRILAT_NODE
 	src/trilat_node.cpp
 	src/trilat_main.cpp
+)
+
+##SRCS files. ROS trilaterate node
+SET(SRCS_ROS_TRILATERATION_NODE
+	src/trilateration_node.cpp
+	src/trilateration_main.cpp
 )
 
 
@@ -74,7 +80,7 @@ SET(SRCS_ROS_TRILAT_NODE
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-  src/trilateration_lib
+  include/trilateration #TODO really neaded?
   ${catkin_INCLUDE_DIRS}
   ${CERES_INCLUDE_DIRS}
 )
@@ -85,3 +91,9 @@ target_link_libraries(receiver_sim_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
 
 add_executable(trilat_node ${SRCS_ROS_TRILAT_NODE} ${SRCS_TR_LIB})
 target_link_libraries(trilat_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
+
+add_executable(trilateration_node ${SRCS_ROS_TRILATERATION_NODE} ${SRCS_TR_LIB})
+target_link_libraries(trilateration_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
+
+
+
