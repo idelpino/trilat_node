@@ -17,7 +17,7 @@ endif()
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   visualization_msgs
-  std_msgs #TODO serve?
+  #std_msgs #TODO serve?
   message_generation
 )
 
@@ -60,17 +60,17 @@ SET(SRCS_ROS_REC_SIM_NODE
 	src/receiver_sim_main.cpp
 )
 
-##SRCS files. ROS trilat node
-SET(SRCS_ROS_TRILAT_NODE
-	src/trilat_node.cpp
-	src/trilat_main.cpp
-)
-
 ##SRCS files. ROS trilaterate node
 SET(SRCS_ROS_TRILATERATION_NODE
 	src/trilateration_node.cpp
 	src/trilateration_main.cpp
 )
+
+##SRCS files. ROS trilat node
+#SET(SRCS_ROS_TRILAT_NODE
+#	src/old/trilat_node.cpp
+#	src/old/trilat_main.cpp
+#)
 
 
 ###########
@@ -80,7 +80,7 @@ SET(SRCS_ROS_TRILATERATION_NODE
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-  include/trilateration #TODO really neaded?
+  #include/trilateration #TODO really neaded?
   ${catkin_INCLUDE_DIRS}
   ${CERES_INCLUDE_DIRS}
 )
