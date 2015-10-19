@@ -12,7 +12,7 @@ TrilaterationNode::~TrilaterationNode() { }
 
 void TrilaterationNode::measurementsCallback(const trilateration::satMeasurementArray::ConstPtr &msg)
 {
-	std::cout << "New measurement received\n";
+	std::cout << "New measurement received";
 
 	// Delete old measurements
 	measurements.clear();
@@ -35,9 +35,8 @@ void TrilaterationNode::measurementsCallback(const trilateration::satMeasurement
 
 void TrilaterationNode::process()
 {
-	std::cout << "...processing...";
 	estReceiver = tr.computePosition(measurements, SPEED_OF_LIGHT);
-	std::cout << " ---> Estimated receiver:\t" << estReceiver.toString() << std::endl;
+	std::cout << " ---> Estimation:\t" << estReceiver.toString() << std::endl;
 
 	// Sets the guess for the next simulation in the actual position
 	tr.setInitialReceiverGuess(estReceiver);

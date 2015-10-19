@@ -11,13 +11,17 @@ ReceiverSimNode::ReceiverSimNode(Receiver r):
 	// Initialize real position publisher
 	markerPub = nh.advertise<visualization_msgs::Marker>("/visualization_marker", 1000);
 
+
+
+
 }
 
 ReceiverSimNode::~ReceiverSimNode() { }
 
-void ReceiverSimNode::move()
+// move receiver of a delta
+void ReceiverSimNode::move(double dx, double dy, double dz)
 {
-	realRec.coords = realRec.coords + Point<double>(0, 0, 1);
+	realRec.coords = realRec.coords + Point<double>(dx, dy, dz);
 	std::cout << "Real receiver moved to: " << realRec.toString() << "\n";
 
 	/*TODO
@@ -27,14 +31,20 @@ void ReceiverSimNode::move()
 	 */
 }
 
+void ReceiverSimNode::moveTo(double x, double y, double z)
+{
+	realRec.coords = Point<double>(x, y, z);
+	std::cout << "Real receiver moved to: " << realRec.toString() << "\n";
+}
+
 void ReceiverSimNode::simulateMeasurements(const std::vector<Point<double>> satellites, const double std_dev, const double speed)
 {
-	measurements = Trilateration::simulateMeasurements(realRec, satellites, std_dev, speed);
+	measurements = tr.simulateMeasurements(realRec, satellites, std_dev, speed);
 }
 
 void ReceiverSimNode::publishMeasurements()
 {
-	std::cout << "Publishing measurements\n";
+	//std::cout << "Publishing measurements\n";
 
 	trilateration::satMeasurement meas;
 	trilateration::satMeasurementArray msg;
@@ -53,7 +63,7 @@ void ReceiverSimNode::publishMeasurements()
 
 void ReceiverSimNode::publishRealReceiver()
 {
-	std::cout << "Publishing real receiver\n";
+	//std::cout << "Publishing real receiver\n";
 
 	visualization_msgs::Marker m;
 	m.header.frame_id = "my_frame";

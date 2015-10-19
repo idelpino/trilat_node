@@ -5,7 +5,7 @@
 #include "receiver_sim_node.h"
 
 const Receiver DEF_REAL_RECEIVER = {Point<double>(), 100e-9};
-const double DEF_STD_DEV = 1e-9;
+const double DEF_STD_DEV = 1e-10;
 const double SPEED_OF_LIGHT = 3e8; // m / s
 
 bool parseArgs(int argc, char** argv, Receiver &realReceiver, std::vector<Point<double> > &satellites, double &std_dev);
@@ -32,13 +32,13 @@ int main(int argc, char **argv)
 	ReceiverSimNode recNode;
 	recNode.setRealRec(realReceiver);
 
-	ros::Rate loopRate(1);
+	ros::Rate loopRate(30);
 
 	//node loop
 	while ( ros::ok() )
 	{
 		//do things
-		recNode.move();
+		recNode.move(0, 0, 0.15);
 		recNode.simulateMeasurements(satellites, std_dev, SPEED_OF_LIGHT);
 		recNode.publishMeasurements();
 		recNode.publishRealReceiver();
