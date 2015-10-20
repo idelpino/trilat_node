@@ -21,7 +21,7 @@ ReceiverSimNode::~ReceiverSimNode() { }
 // move receiver of a delta
 void ReceiverSimNode::move(double dx, double dy, double dz)
 {
-	realRec.coords = realRec.coords + Point<double>(dx, dy, dz);
+	realRec.pos = realRec.pos + Point<double>(dx, dy, dz);
 	std::cout << "Real receiver moved to: " << realRec.toString() << "\n";
 
 	/*TODO
@@ -33,7 +33,7 @@ void ReceiverSimNode::move(double dx, double dy, double dz)
 
 void ReceiverSimNode::moveTo(double x, double y, double z)
 {
-	realRec.coords = Point<double>(x, y, z);
+	realRec.pos = Point<double>(x, y, z);
 	std::cout << "Real receiver moved to: " << realRec.toString() << "\n";
 }
 
@@ -50,9 +50,9 @@ void ReceiverSimNode::publishMeasurements()
 	trilateration::satMeasurementArray msg;
 
 	for (int i = 0; i < measurements.size(); ++i) {
-		meas.x = measurements.at(i).coords.getX();
-		meas.y = measurements.at(i).coords.getY();
-		meas.z = measurements.at(i).coords.getZ();
+		meas.x = measurements.at(i).pos.getX();
+		meas.y = measurements.at(i).pos.getY();
+		meas.z = measurements.at(i).pos.getZ();
 		meas.pseudorange = measurements.at(i).pseudorange;
 
 		msg.measurements.push_back(meas);
@@ -81,9 +81,9 @@ void ReceiverSimNode::publishRealReceiver()
 	m.action = visualization_msgs::Marker::ADD;
 
 	// Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
-	m.pose.position.x = realRec.coords.getX();
-	m.pose.position.y = realRec.coords.getY();
-	m.pose.position.z = realRec.coords.getZ();
+	m.pose.position.x = realRec.pos.getX();
+	m.pose.position.y = realRec.pos.getY();
+	m.pose.position.z = realRec.pos.getZ();
 	m.pose.orientation.x = 0.0;
 	m.pose.orientation.y = 0.0;
 	m.pose.orientation.z = 0.0;

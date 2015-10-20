@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 	{
 		//do things
 		//recNode.move(0, 0, 0.4);
-		recNode.moveTo(radius * cos(theta*PI/180), radius * sin(theta*PI/180), recNode.realRec.coords.getZ() + 0.01);
+		recNode.moveTo(radius * cos(theta*PI/180), radius * sin(theta*PI/180), recNode.realRec.pos.getZ() + 0.01);
 		theta++;
 		recNode.simulateMeasurements(satellites, std_dev, SPEED_OF_LIGHT);
 		recNode.publishMeasurements();
@@ -94,7 +94,7 @@ bool parseArgs(int argc, char** argv, Receiver &realReceiver, std::vector<Point<
 			double y = atof(argv[++i]);
 			double z = atof(argv[++i]);
 
-			realReceiver.coords = Point<double>(x, y, z);
+			realReceiver.pos = Point<double>(x, y, z);
 			receiver_setted = true;
 		}
 	}

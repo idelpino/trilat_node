@@ -63,9 +63,9 @@ void TrilaterationNode::publishEstReceiver()
 	m.action = visualization_msgs::Marker::ADD;
 
 	// Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
-	m.pose.position.x = estReceiver.coords.getX();
-	m.pose.position.y = estReceiver.coords.getY();
-	m.pose.position.z = estReceiver.coords.getZ();
+	m.pose.position.x = estReceiver.pos.getX();
+	m.pose.position.y = estReceiver.pos.getY();
+	m.pose.position.z = estReceiver.pos.getZ();
 	m.pose.orientation.x = 0.0;
 	m.pose.orientation.y = 0.0;
 	m.pose.orientation.z = 0.0;
@@ -106,9 +106,9 @@ void TrilaterationNode::publishSatellites()
 		m.action = visualization_msgs::Marker::ADD;
 
 		// Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
-		m.pose.position.x = measurements[i].coords.getX();
-		m.pose.position.y = measurements[i].coords.getY();
-		m.pose.position.z = measurements[i].coords.getZ();
+		m.pose.position.x = measurements[i].pos.getX();
+		m.pose.position.y = measurements[i].pos.getY();
+		m.pose.position.z = measurements[i].pos.getZ();
 		m.pose.orientation.x = 0.0;
 		m.pose.orientation.y = 0.0;
 		m.pose.orientation.z = 0.0;
