@@ -1,0 +1,22 @@
+<!-- very simple launcher
+TODO:
+-->
+
+<launch>
+
+  <node name="rviz"
+		pkg="rviz"
+		type="rviz"/>
+
+  <node	name="trilateration_node"
+		pkg="trilateration"
+		type="trilateration_node" />
+
+  <node name="receiver_sim_node"
+		pkg="trilateration"
+		type="receiver_sim_node"
+		args="-r 2 2 2 -s -25 36 140 -s 10 -32 150 -s -60 -8 170 -s 24 55 156 -s 99 16 188"/>
+
+</launch>
+
+ 
