@@ -7,7 +7,7 @@
 #include "trilateration/satMeasurement.h"
 #include "trilateration/satMeasurementArray.h"
 
-#include "../include/trilateration/src/Trilateration.h"
+#include "../include/trilateration/src/trilateration.h"
 #include "../include/trilateration/src/structs.h"
 
 //TODO gestisci discorso velocita

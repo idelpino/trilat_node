@@ -38,8 +38,6 @@ generate_messages(
 )
 
 
-
-
 catkin_package(
   CATKIN_DEPENDS message_runtime
 )
@@ -51,7 +49,7 @@ catkin_package(
 
 ##SRCS files. Trilateration library
 SET(SRCS_TR_LIB
-	include/trilateration/src/Trilateration.cpp
+	include/trilateration/src/trilateration.cpp
 )
 
 ##SRCS files. ROS receiver simulator node
@@ -66,13 +64,6 @@ SET(SRCS_ROS_TRILATERATION_NODE
 	src/trilateration_main.cpp
 )
 
-##SRCS files. ROS trilat node
-#SET(SRCS_ROS_TRILAT_NODE
-#	src/old/trilat_node.cpp
-#	src/old/trilat_main.cpp
-#)
-
-
 ###########
 ## Build ##
 ###########
@@ -80,7 +71,6 @@ SET(SRCS_ROS_TRILATERATION_NODE
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-  #include/trilateration #TODO really neaded?
   ${catkin_INCLUDE_DIRS}
   ${CERES_INCLUDE_DIRS}
 )
@@ -92,8 +82,4 @@ target_link_libraries(receiver_sim_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
 
 add_executable(trilateration_node ${SRCS_ROS_TRILATERATION_NODE} ${SRCS_TR_LIB})
 target_link_libraries(trilateration_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
-
-## old stuff
-#add_executable(trilat_node ${SRCS_ROS_TRILAT_NODE} ${SRCS_TR_LIB})
-#target_link_libraries(trilat_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
 

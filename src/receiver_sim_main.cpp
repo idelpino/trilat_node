@@ -7,6 +7,7 @@
 const Receiver DEF_REAL_RECEIVER = {Point<double>(), 100e-9};
 const double DEF_STD_DEV = 1e-10;
 const double SPEED_OF_LIGHT = 3e8; // m / s
+const double PI = 3.14159265;
 
 bool parseArgs(int argc, char** argv, Receiver &realReceiver, std::vector<Point<double> > &satellites, double &std_dev);
 
@@ -32,13 +33,18 @@ int main(int argc, char **argv)
 	ReceiverSimNode recNode;
 	recNode.setRealRec(realReceiver);
 
-	ros::Rate loopRate(30);
+	ros::Rate loopRate(20);
+
+	int theta=0;
+	double radius = 15;
 
 	//node loop
 	while ( ros::ok() )
 	{
 		//do things
-		recNode.move(0, 0, 0.15);
+		//recNode.move(0, 0, 0.4);
+		recNode.moveTo(radius * cos(theta*PI/180), radius * sin(theta*PI/180), recNode.realRec.coords.getZ() + 0.01);
+		theta++;
 		recNode.simulateMeasurements(satellites, std_dev, SPEED_OF_LIGHT);
 		recNode.publishMeasurements();
 		recNode.publishRealReceiver();

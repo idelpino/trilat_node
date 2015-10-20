@@ -13,16 +13,17 @@
  * vettore di measurement
  */
 
-#include "../include/trilateration/src/Trilateration.h"
+#include "../include/trilateration/src/trilateration.h"
 #include "../include/trilateration/src/structs.h"
 
 
 class ReceiverSimNode
 {
-protected:
+public:
 	// Contains coords and bias of the true receiver
 	Receiver realRec;
 
+protected:
 	// Measure obtained from satellites (simulated)
 	std::vector<SatelliteMeasurement> measurements;
 
