@@ -29,6 +29,7 @@ add_message_files(
    FILES
    satMeasurement.msg
    satMeasurementArray.msg
+   receiver.msg
 )
 
 ## Generate added messages and services with any dependencies listed here

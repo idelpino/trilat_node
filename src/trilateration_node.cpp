@@ -6,6 +6,9 @@ TrilaterationNode::TrilaterationNode() : nh(ros::this_node::getName())
 	measurementSub = nh.subscribe("/gps_measurements", 1000, &TrilaterationNode::measurementsCallback, this);
 
 	markerPub = nh.advertise<visualization_msgs::Marker>("/visualization_marker", 1000);
+
+	estRecPub = nh.advertise<trilateration::receiver>("/estimatedReceiver", 1000);
+
 }
 
 TrilaterationNode::~TrilaterationNode() { }
@@ -48,6 +51,10 @@ void TrilaterationNode::process()
 void TrilaterationNode::publishEstReceiver()
 {
 	visualization_msgs::Marker m;
+	trilateration::receiver r;
+
+	r.bias = estReceiver.bias;
+
 	m.header.frame_id = "my_frame";
 	m.header.stamp = ros::Time::now();
 
@@ -63,9 +70,9 @@ void TrilaterationNode::publishEstReceiver()
 	m.action = visualization_msgs::Marker::ADD;
 
 	// Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
-	m.pose.position.x = estReceiver.pos.getX();
-	m.pose.position.y = estReceiver.pos.getY();
-	m.pose.position.z = estReceiver.pos.getZ();
+	m.pose.position.x = r.x = estReceiver.pos.getX();
+	m.pose.position.y = r.y = estReceiver.pos.getY();
+	m.pose.position.z = r.z = estReceiver.pos.getZ();
 	m.pose.orientation.x = 0.0;
 	m.pose.orientation.y = 0.0;
 	m.pose.orientation.z = 0.0;
@@ -85,6 +92,7 @@ void TrilaterationNode::publishEstReceiver()
 	m.lifetime = ros::Duration();
 
 	markerPub.publish(m);
+	estRecPub.publish(r);
 }
 
 void TrilaterationNode::publishSatellites()

@@ -6,6 +6,7 @@
 #include <visualization_msgs/Marker.h>
 #include "trilateration/satMeasurement.h"
 #include "trilateration/satMeasurementArray.h"
+#include "trilateration/receiver.h"
 
 #include "../include/trilateration/src/trilateration.h"
 #include "../include/trilateration/src/structs.h"
@@ -34,6 +35,9 @@ protected:
 
 	// Publisher (markers)
 	ros::Publisher markerPub;
+
+	// Publisher (estimated receiver)
+	ros::Publisher estRecPub;
 
 public:
 	TrilaterationNode();

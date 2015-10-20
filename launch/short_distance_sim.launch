@@ -1,7 +1,3 @@
-<!-- very simple launcher
-TODO:
--->
-
 <launch>
 
   <node name="rviz"
@@ -16,6 +12,18 @@ TODO:
 		pkg="trilateration"
 		type="receiver_sim_node"
 		args="-r 2 2 2 -s -25 36 140 -s 10 -32 150 -s -60 -8 170 -s 24 55 156 -s 99 16 188"/>
+<!--
+TODO: open a rqt_plot with coords and another with bias (different scale)
+-->
+  <node name="rqt_plot_coords"
+		pkg="rqt_plot"
+		type="rqt_plot"
+		args="/estimaterReceiver/x:y:z"/>
+
+  <node name="rqt_plot_bias"
+		pkg="rqt_plot"
+		type="rqt_plot"
+		args="/estimaterReceiver/bias"/>
 
 </launch>
 
