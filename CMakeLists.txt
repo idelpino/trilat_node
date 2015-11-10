@@ -65,6 +65,12 @@ SET(SRCS_ROS_TRILATERATION_NODE
 	src/trilateration_main.cpp
 )
 
+##SRCS files. ROS rinex reader node
+SET(SRCS_ROS_RINEX_READ_NODE
+	src/rinex_reader_node.cpp
+	src/rinex_reader_main.cpp
+)
+
 ###########
 ## Build ##
 ###########
@@ -83,4 +89,8 @@ target_link_libraries(receiver_sim_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
 
 add_executable(trilateration_node ${SRCS_ROS_TRILATERATION_NODE} ${SRCS_TR_LIB})
 target_link_libraries(trilateration_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
+
+
+add_executable(rinex_reader_node ${SRCS_ROS_RINEX_READ_NODE} ${SRCS_TR_LIB})
+target_link_libraries(rinex_reader_node ${catkin_LIBRARIES} ${CERES_LIBRARIES} gpstk)
 
