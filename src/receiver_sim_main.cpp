@@ -9,7 +9,7 @@ const double DEF_STD_DEV = 1e-10;
 const double SPEED_OF_LIGHT = 3e8; // m / s
 const double PI = 3.14159265;
 
-bool parseArgs(int argc, char** argv, Receiver &realReceiver, std::vector<Point<double> > &satellites, double &std_dev);
+bool parseArgs(int argc, char** argv, Receiver &realReceiver, std::vector<SatelliteMeasurement> &satellites, double &std_dev);
 
 
 //node main
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 	//parse arguments
 	double std_dev = DEF_STD_DEV;
 	Receiver realReceiver = DEF_REAL_RECEIVER;
-	std::vector<Point<double>> satellites;
+	std::vector<SatelliteMeasurement> satellites;
 
 	if(!parseArgs(argc, argv, realReceiver, satellites, std_dev))
 	{
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 
 //TODO boost gives a nice parser
 //TODO metti tutte le funzioni parser in un file esterno se e' possibile (o in una classe)
-bool parseArgs(int argc, char** argv, Receiver &realReceiver, std::vector<Point<double>> &satellites, double &std_dev)
+bool parseArgs(int argc, char** argv, Receiver &realReceiver, std::vector<SatelliteMeasurement> &satellites, double &std_dev)
 {
 	bool receiver_setted = false;
 	int n_satellites = 0;
@@ -85,7 +85,11 @@ bool parseArgs(int argc, char** argv, Receiver &realReceiver, std::vector<Point<
 			double y = atof(argv[++i]);
 			double z = atof(argv[++i]);
 
-			satellites.push_back(Point<double>(x, y, z));
+			SatelliteMeasurement sm;
+			sm.pos = Point<double>(x, y, z);
+			sm.pseudorange = 0.0;
+
+			satellites.push_back(sm);
 			++n_satellites;
 
 		} else if ((strcmp (argv[i], "--receiver") == 0) || (strcmp (argv[i], "-r") == 0)){

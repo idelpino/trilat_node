@@ -51,7 +51,8 @@ public:
 	void move(double dx, double dy, double dz);
 	void moveTo(double x, double y, double z);
 
-	void simulateMeasurements(const std::vector<Point<double>> satellites, const double std_dev, const double speed);
+	void simulateMeasurements(std::vector<SatelliteMeasurement> satellites,
+							  const double std_dev, const double speed);
 
 	void publishMeasurements();
 

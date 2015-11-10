@@ -37,9 +37,11 @@ void ReceiverSimNode::moveTo(double x, double y, double z)
 	std::cout << "Real receiver moved to: " << realRec.toString() << "\n";
 }
 
-void ReceiverSimNode::simulateMeasurements(const std::vector<Point<double>> satellites, const double std_dev, const double speed)
+void ReceiverSimNode::simulateMeasurements(std::vector<SatelliteMeasurement> satellites,
+										   const double std_dev, const double speed)
 {
-	measurements = tr.simulateMeasurements(realRec, satellites, std_dev, speed);
+	tr.simulateMeasurements(realRec, satellites, std_dev, speed);
+	measurements = satellites;
 }
 
 void ReceiverSimNode::publishMeasurements()
