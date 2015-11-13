@@ -9,104 +9,111 @@
 #include "trilateration/satMeasurement.h"
 #include "trilateration/satMeasurementArray.h"
 
-/// My library includes
+// Trilateration library includes
 #include "../include/trilateration/src/trilateration.h"
 #include "../include/trilateration/src/structs.h"
 
 
 /// TODO poi vedi quali include servono veramente
-// Basic input/output C++ class
-#include <iostream>
+// First, let's include Standard Template Library classes
+#include <string>
+#include <vector>
 
 // Classes for handling observations RINEX files (data)
+#include "Rinex3ObsHeader.hpp"
 #include "Rinex3ObsData.hpp"
 #include "Rinex3ObsStream.hpp"
 
-// Class to easily extract data from Rinex3ObsData objects
-#include "ExtractData.hpp"
-
-// Classes for handling satellite navigation parameters RINEX files
-// (Broadcast ephemerides)
+// Classes for handling satellite navigation parameters RINEX
+// files (ephemerides)
 #include "Rinex3NavHeader.hpp"
 #include "Rinex3NavData.hpp"
 #include "Rinex3NavStream.hpp"
 
-// Class to store satellite broadcast navigation data
-#include "GPSEphemerisStore.hpp"
+// Classes for handling RINEX files with meteorological parameters
+#include "RinexMetBase.hpp"
+#include "RinexMetData.hpp"
+#include "RinexMetHeader.hpp"
+#include "RinexMetStream.hpp"
 
-// Class to model GPS data for a mobile receiver
-#include "ModeledPR.hpp"
-
-// Class to model the tropospheric delays
+// Class for handling tropospheric models
 #include "TropModel.hpp"
 
-// Classes to model ans store ionospheric delays
-#include "IonoModel.hpp"
-#include "IonoModelStore.hpp"
+// Class for storing "broadcast-type" ephemerides
+#include "GPSEphemerisStore.hpp"
 
-// Class to solve the equations system using a Weighted Least Mean Square method
-#include "SolverWMS.hpp"
+// Class for handling RAIM
+#include "PRSolution2.hpp"
 
-// Class to compute the weights to be used for each satellite
-#include "MOPSWeight.hpp"
+// Class defining GPS system constants
+#include "GNSSconstants.hpp"
 
-// Basic framework for programs in the GPSTk. The 'process()' method MUST
-// be implemented
-#include "BasicFramework.hpp"
+//per convertire coordinate da ecef a lla
+#include <Position.hpp>
+#include <Triple.hpp>
+#include "WGS84Ellipsoid.hpp"
 
-#include "geometry.hpp"                   // DEG_TO_RAD
+// per calcolare la posizione dei satelliti
+#include <Matrix.hpp>
+#include <PreciseRange.hpp>
 
-// Time-class year-day-second
-#include "YDSTime.hpp"
+//per leggere il tempo decentemente
+#include "CivilTime.hpp"
 /// TODO fin qui
 
-using namespace gpstk; // TODO da togliere
+
+
+
+
 
 class RinexReaderNode
 {
-
-protected:
-
-	// Measure obtained from satellites
-	std::vector<SatelliteMeasurement> measurements;
-
-	// ROS node handle
-	ros::NodeHandle nh;
-
-	// Publisher for measurements
-	ros::Publisher measurementsPub;
-
 public:
-
-	RinexReaderNode(std::string path2obs, std::string path2nav, std::string path2met = NULL);
-
+	RinexReaderNode(char *path_obs, char *path_nav/*, char *path_met = NULL*/);
 	~RinexReaderNode();
-
-	void processNextEpoch();
-
+	int processNextEpoch();
 	void publishMeasurements();
 
+	bool isSolutionValid() const;
+	bool isFileFinished() const;
 
+	void printEpochRecap();
+//	SatelliteMeasurement get vettore di satelliti
 
-	Rinex3ObsStream rObsFile;     // Object to read Rinex observation data files
-	Rinex3ObsData rData;          // Object to store Rinex observation data
-	Rinex3NavStream rNavFile;     // Object to read Rinex navigation data files
-	Rinex3NavData rNavData;       // Object to store Rinex navigation data
-	Rinex3NavHeader rNavHeader;   // Object to read the header of Rinex
-								  // navigation data files
-	IonoModelStore ionoStore;     // Object to store ionospheric models
-	GPSEphemerisStore bceStore;   // Object to store ephemeris
-	ModeledPR modelPR;            // Declare a ModeledReferencePR object
-	MOPSTropModel mopsTM;         // Declare a MOPSTropModel object
-	ExtractData obsC1;            // Declare an ExtractData object
-	int indexC1;                  // Index to "C1" observation
-	bool useFormerPos;            // Flag indicating if we have an a priori
-								  // position
-	Position formerPosition;      // Object to store the former position
-	IonoModel ioModel;            // Declare a Ionospheric Model object
-	SolverWMS solver;             // Declare an object to apply WMS method
-	MOPSWeight mopsWeights;       // Object to compute satellites' weights
+	Receiver getReceiverECEF() const;
+	Receiver getReceiverLLR() const;
 
+	std::vector<SatelliteMeasurement> getMeasurements() const;
+
+protected:
+	void gpstkInit();
+
+protected:
+	ros::NodeHandle nh;								// ROS node handle
+	ros::Publisher measurementsPub;					// Publisher for measurements
+
+	std::vector<SatelliteMeasurement> measurements;	// Measures obtained from satellites
+
+	bool fileFinished;
+
+	gpstk::GPSEphemerisStore bcestore;	// Object to store ephemeris
+	gpstk::PRSolution2 raimSolver;		// RAIM solver
+	gpstk::ZeroTropModel noTropModel;	// Object for void-type tropospheric model
+	gpstk::TropModel *tropModelPtr;		// Pointer to the tropospheric models.
+
+	// Let's compute an useful constant (also found in "GNSSconstants.hpp")
+	const double GAMMA = (gpstk::L1_FREQ_GPS/gpstk::L2_FREQ_GPS)*(gpstk::L1_FREQ_GPS/gpstk::L2_FREQ_GPS);
+	const double SPEED_OF_LIGHT = 3e8;
+
+	gpstk::Rinex3NavStream rNavFile;    // Object to read Rinex navigation data files
+	gpstk::Rinex3NavData rNavData;      // Object to store Rinex navigation data
+	gpstk::Rinex3NavHeader rNavHeader;  // Object to read the header of Rinex navigation data files
+
+	gpstk::Rinex3ObsStream rObsFile;    // Object to read Rinex observation data files
+	gpstk::Rinex3ObsData rObsData;      // Object to store Rinex observation data
+	gpstk::Rinex3ObsHeader rObsHeader;	// Object to read the header of Rinex observation data files
+	int indexP1;
+	int indexP2;
 
 };
 
