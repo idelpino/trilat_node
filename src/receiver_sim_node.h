@@ -8,11 +8,6 @@
 #include "trilateration/satMeasurement.h"
 #include "trilateration/satMeasurementArray.h"
 
-/* TODO
- * devo farmi il mio messaggio particolare
- * vettore di measurement
- */
-
 #include "../include/trilateration/src/trilateration.h"
 #include "../include/trilateration/src/structs.h"
 

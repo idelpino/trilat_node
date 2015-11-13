@@ -53,6 +53,11 @@ SET(SRCS_TR_LIB
 	include/trilateration/src/trilateration.cpp
 )
 
+##SRCS files. Rinex reader library
+SET(SRCS_RINEX_READER_LIB
+	include/rinex_reader/src/rinex_reader.cpp
+)
+
 ##SRCS files. ROS receiver simulator node
 SET(SRCS_ROS_REC_SIM_NODE
 	src/receiver_sim_node.cpp
@@ -69,6 +74,12 @@ SET(SRCS_ROS_TRILATERATION_NODE
 SET(SRCS_ROS_RINEX_READ_NODE
 	src/rinex_reader_node.cpp
 	src/rinex_reader_main.cpp
+)
+
+##SRCS files. ROS orbit prediction node
+SET(SRCS_ROS_ORBIT_PREDICT_NODE
+	src/orbit_prediction_node.cpp
+	src/orbit_prediction_main.cpp
 )
 
 ###########
@@ -93,4 +104,8 @@ target_link_libraries(trilateration_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
 
 add_executable(rinex_reader_node ${SRCS_ROS_RINEX_READ_NODE} ${SRCS_TR_LIB})
 target_link_libraries(rinex_reader_node ${catkin_LIBRARIES} ${CERES_LIBRARIES} gpstk)
+
+
+add_executable(orbit_prediction_node ${SRCS_ROS_ORBIT_PREDICT_NODE} ${SRCS_RINEX_READER_LIB})
+target_link_libraries(orbit_prediction_node ${catkin_LIBRARIES} gpstk)
 
