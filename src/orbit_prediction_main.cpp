@@ -10,36 +10,33 @@ int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "orbit_prediction_main");
 
+	if( (argc < 2) || (argc > 3) )
+	{
+		cerr <<  "Usage:\n\t" << argv[0]
+			 << " <RINEX Obs file>  <RINEX Nav file>" << endl;
 
-//	//TODO per ora i meteo file non li gestisco!!
-//	if( (argc < 2) || (argc > 3) )
-//	{
-//		cerr <<  "Usage:\n\t" << argv[0]
-//			 << " <RINEX Obs file>  <RINEX Nav file>" /* [<RINEX Met file>]"*/ << endl;
+		exit (-1);
+	}
 
-//		exit (-1);
-//	}
+	OrbitPredictionNode op(argv[1], argv[2]);
 
+	// update sats position every 'interval' seconds
+	double interval = 1;
 
-//	RinexReaderNode rinNode(argv[1], argv[2]);
-
-//	ros::Rate loopRate(0.5);
-
-//	while ( ros::ok() )
-//	{
-//		rinNode.processNextEpoch();
-//		if(rinNode.isSolutionValid())
-//		{
-//			rinNode.printEpochRecap();
-//			rinNode.publishMeasurements();
-//		}
+	ros::Rate loopRate(1.0/interval);
 
 
-//		if(rinNode.isFileFinished()) {
-//			break;
-//		} else {
-//			loopRate.sleep();
-//		}
-//	}
+	while ( ros::ok() )
+	{
+		///prima di tutto leggi un'epoca
+		/// poi interpola per un po di tempo quei dati
+		/// ad ogni interpolazione pubblica i risultati, in modo che rviz visualizzi
+		///
+
+		// visualize a sphere that represent earth
+		op.publishEarth();
+
+		loopRate.sleep();
+	}
 	return 0;
 }
