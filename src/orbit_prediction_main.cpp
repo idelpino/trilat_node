@@ -20,22 +20,37 @@ int main(int argc, char **argv)
 
 	OrbitPredictionNode op(argv[1], argv[2]);
 
-	// update sats position every 'interval' seconds
-	double interval = 1;
+	ros::Rate loopRate(1000);
 
-	ros::Rate loopRate(1.0/interval);
-
+	int i = 0;
+	bool fileNotFinished = true;
 
 	while ( ros::ok() )
 	{
+		// visualize a sphere that represent earth
+		op.publishEarth();
+
+		if(fileNotFinished)
+			cout << "\t";
+
+		// at the first time compute position from obs file
+		if(i%30  == 0 && fileNotFinished){
+			fileNotFinished = op.processNextEpoch();
+
+			i = 0;
+		} else {
+			op.computeSatsPositionAfter(i);
+		}
+
+		op.publishSatsPosition();
+
+
 		///prima di tutto leggi un'epoca
 		/// poi interpola per un po di tempo quei dati
 		/// ad ogni interpolazione pubblica i risultati, in modo che rviz visualizzi
 		///
 
-		// visualize a sphere that represent earth
-		op.publishEarth();
-
+		i++;
 		loopRate.sleep();
 	}
 	return 0;

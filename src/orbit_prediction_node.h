@@ -19,7 +19,7 @@ class OrbitPredictionNode
 public:
 	OrbitPredictionNode(char *path_obs, char *path_nav);
 
-	void processNextEpoch();
+	bool processNextEpoch();
 
 	// compute position of sats at time observation + offset
 	void computeSatsPositionAfter(double offset);
@@ -33,7 +33,8 @@ public:
 	// to decide the scale of visualization
 	void setScale(double value);
 
-
+protected:
+	void publishSat(int index);
 
 public:
 	const double EARTH_RADIUS = 6371000; // meters
