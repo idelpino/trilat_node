@@ -22,7 +22,7 @@ bool OrbitPredictionNode::processNextEpoch()
 	rr.processNextEpoch();
 	sats = rr.getMeasurements();
 
-	cout << rr.getEpochTime() << " <---" << endl;
+	cout << RinexReader::timePretty(rr.getEpochTime()) << " <---" << endl;
 
 	return ! rr.isFileFinished();
 }
@@ -32,7 +32,7 @@ void OrbitPredictionNode::computeSatsPositionAfter(double offset)
 
 	sats = rr.computeSatPosition(rr.getEpochTime() + offset);
 
-	cout << rr.getEpochTime() + offset << endl;
+	cout << RinexReader::timePretty(rr.getEpochTime() + offset) << endl;
 }
 
 void OrbitPredictionNode::publishSatsPosition()
