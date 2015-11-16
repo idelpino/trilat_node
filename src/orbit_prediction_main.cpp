@@ -1,3 +1,9 @@
+//
+// USAGE:
+//
+// rosrun trilateration orbit_prediction_node src/trilateration/data/bahr1620.04o src/trilateration/data/bahr1620.04n
+//
+
 
 #include <iostream>
 
@@ -27,14 +33,15 @@ int main(int argc, char **argv)
 
 	while ( ros::ok() )
 	{
-		// visualize a sphere that represent earth
-		op.publishEarth();
 
 		if(fileNotFinished)
 			cout << "\t";
 
 		// at the first time compute position from obs file
 		if(i%30  == 0 && fileNotFinished){
+			// visualize a sphere that represent earth
+			op.publishEarth(); // TODO non so perche' non riesca a stamparlo solo una volta
+
 			fileNotFinished = op.processNextEpoch();
 
 			i = 0;
@@ -42,13 +49,8 @@ int main(int argc, char **argv)
 			op.computeSatsPositionAfter(i);
 		}
 
-		op.publishSatsPosition();
+		op.publishSatsPositions();
 
-
-		///prima di tutto leggi un'epoca
-		/// poi interpola per un po di tempo quei dati
-		/// ad ogni interpolazione pubblica i risultati, in modo che rviz visualizzi
-		///
 
 		i++;
 		loopRate.sleep();

@@ -21,6 +21,7 @@ bool OrbitPredictionNode::processNextEpoch()
 {
 	rr.processNextEpoch();
 	sats = rr.getMeasurements();
+	vel = rr.getSatVelocities();
 
 	cout << RinexReader::timePretty(rr.getEpochTime()) << " <---" << endl;
 
@@ -29,13 +30,15 @@ bool OrbitPredictionNode::processNextEpoch()
 
 void OrbitPredictionNode::computeSatsPositionAfter(double offset)
 {
+	rr.updateMeasurementAtTime(rr.getEpochTime() + offset);
 
-	sats = rr.computeSatPosition(rr.getEpochTime() + offset);
+	sats = rr.getMeasurements();
+	vel = rr.getSatVelocities();
 
 	cout << RinexReader::timePretty(rr.getEpochTime() + offset) << endl;
 }
 
-void OrbitPredictionNode::publishSatsPosition()
+void OrbitPredictionNode::publishSatsPositions()
 {
 	for (int i = 0; i < sats.size(); ++i) {
 		publishSat(i);
@@ -129,5 +132,65 @@ void OrbitPredictionNode::publishSat(int index)
 	m.lifetime = ros::Duration();
 
 	markerPub.publish(m);
+
+
+	publishSatVelocity(index);
 }
 
+void OrbitPredictionNode::publishSatVelocity(int index)
+{
+	//TODO pubblica frecce!
+	visualization_msgs::Marker m;
+	m.header.frame_id = "my_frame";
+	m.header.stamp = ros::Time::now();
+
+	// Set the namespace and id for this marker.  This serves to create a unique ID
+	// Any marker sent with the same namespace and id will overwrite the old one
+	m.ns = "vel";
+	m.id = index;
+
+	// Set the marker type.
+	m.type = visualization_msgs::Marker::ARROW;
+
+	// Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
+	m.action = visualization_msgs::Marker::ADD;
+
+	// Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
+//	m.pose.position.x = sats[index].pos.getX() * scale;
+//	m.pose.position.y = sats[index].pos.getY() * scale;
+//	m.pose.position.z = sats[index].pos.getZ() * scale;
+
+//	m.pose.orientation.x = (sats[index].pos.getX() + vel[index][0]) * scale;
+//	m.pose.orientation.y = (sats[index].pos.getY() + vel[index][1]) * scale;
+//	m.pose.orientation.z = (sats[index].pos.getZ() + vel[index][2]) * scale;
+//	m.pose.orientation.w = 1.0;
+
+	geometry_msgs::Point p1;
+	p1.x = sats[index].pos.getX() * scale;
+	p1.y = sats[index].pos.getY() * scale;
+	p1.z = sats[index].pos.getZ() * scale;
+
+	geometry_msgs::Point p2;
+	p2.x = (sats[index].pos.getX() + vel[index][0]*500) * scale;
+	p2.y = (sats[index].pos.getY() + vel[index][1]*500) * scale;
+	p2.z = (sats[index].pos.getZ() + vel[index][2]*500) * scale;
+
+	m.points.push_back(p1);
+	m.points.push_back(p2);
+
+
+	// Set the scale of the marker -- 1x1x1 here means 1m on a side
+	m.scale.x = 100000*scale;
+	m.scale.y = 100000*scale;
+	m.scale.z = 0;
+
+	// Set the color -- be sure to set alpha to something non-zero!
+	m.color.r = 1.0f;
+	m.color.g = 1.0f;
+	m.color.b = 0.0f;
+	m.color.a = 1.0;
+
+	m.lifetime = ros::Duration();
+
+	markerPub.publish(m);
+}

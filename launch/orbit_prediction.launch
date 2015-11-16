@@ -1,0 +1,26 @@
+<launch>
+
+  <node name="rviz"
+		pkg="rviz"
+		type="rviz"/>
+
+  <node name="orbit_prediction_node"
+		pkg="trilateration"
+		type="orbit_prediction_node"
+		args="~/catkin_ws/src/trilateration/data/bahr1620.04o ~/catkin_ws/src/trilateration/data/bahr1620.04n "/>
+
+<!-- TODO: plottare qualcosa?
+
+  <node name="rqt_plot_coords"
+		pkg="rqt_plot"
+		type="rqt_plot"
+		args="/estimaterReceiver/x:y:z"/>
+
+  <node name="rqt_plot_bias"
+		pkg="rqt_plot"
+		type="rqt_plot"
+		args="/estimaterReceiver/bias"/>
+-->
+</launch>
+
+ 

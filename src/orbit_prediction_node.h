@@ -25,7 +25,7 @@ public:
 	void computeSatsPositionAfter(double offset);
 
 	// publish sats list
-	void publishSatsPosition();
+	void publishSatsPositions();
 
 	// publish a sphere that represents the earth
 	void publishEarth();
@@ -35,6 +35,7 @@ public:
 
 protected:
 	void publishSat(int index);
+	void publishSatVelocity(int index);
 
 public:
 	const double EARTH_RADIUS = 6371000; // meters
@@ -47,6 +48,7 @@ protected:
 	RinexReader rr;
 
 	std::vector<SatelliteMeasurement> sats;
+	std::vector<gpstk::Triple> vel;
 
 	// ROS node handle
 	ros::NodeHandle nh;

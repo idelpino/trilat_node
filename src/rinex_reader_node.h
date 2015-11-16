@@ -1,7 +1,12 @@
 #ifndef RINEXREADERNODE_H
 #define RINEXREADERNODE_H
 
-/// ROS includes
+///	TODO
+///	da cambiare completamente il codice, in modo che utilizzi la mia libreria
+///	TODO
+
+
+// ROS includes
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
 

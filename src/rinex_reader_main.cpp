@@ -3,6 +3,10 @@
 
 #include "rinex_reader_node.h"
 
+///	TODO
+///	da cambiare completamente il codice, in modo che utilizzi la mia libreria
+///	TODO
+
 using namespace std;
 
 
