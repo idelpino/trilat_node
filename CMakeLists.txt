@@ -16,9 +16,11 @@ endif()
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  visualization_msgs
-  #std_msgs #TODO serve?
+  std_msgs #TODO serve?
   message_generation
+  visualization_msgs
+  tf
+  nav_msgs
 )
 
 ## System dependencies are found with CMake's conventions

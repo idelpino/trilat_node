@@ -13,6 +13,8 @@
 
 #include "../include/rinex_reader/src/rinex_reader.h"
 
+#include <tf/transform_broadcaster.h>
+#include <nav_msgs/Odometry.h>
 
 class OrbitPredictionNode
 {
@@ -33,9 +35,15 @@ public:
 	// to decide the scale of visualization
 	void setScale(double value);
 
+	void publishOdometry(int index); // TODO da togliere
+
 protected:
 	void publishSat(int index);
 	void publishSatVelocity(int index);
+
+	//TODO da togliere forse
+	void publishXAxis(int index);
+
 
 public:
 	const double EARTH_RADIUS = 6371000; // meters
@@ -44,8 +52,9 @@ public:
 	const double MEGAMETERS = KILOMETERS/1000;
 
 protected:
-
 	RinexReader rr;
+
+	ros::Time current_time;
 
 	std::vector<SatelliteMeasurement> sats;
 	std::vector<gpstk::Triple> vel;
@@ -53,10 +62,11 @@ protected:
 	// ROS node handle
 	ros::NodeHandle nh;
 
-	// Publisher
+	// Publishers
 	ros::Publisher markerPub;
 
-
+	ros::Publisher odom_pub;
+	tf::TransformBroadcaster odom_broadcaster;
 
 	// provv: per gestire le dimensioni di stampa. forse e' meglio un enum
 	double scale;

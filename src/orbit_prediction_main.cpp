@@ -26,13 +26,14 @@ int main(int argc, char **argv)
 
 	OrbitPredictionNode op(argv[1], argv[2]);
 
-	ros::Rate loopRate(1000);
+	ros::Rate loopRate(500);
 
 	int i = 0;
 	bool fileNotFinished = true;
 
 	while ( ros::ok() )
 	{
+		op.publishEarth();
 
 		if(fileNotFinished)
 			cout << "\t";
@@ -40,7 +41,6 @@ int main(int argc, char **argv)
 		// at the first time compute position from obs file
 		if(i%30  == 0 && fileNotFinished){
 			// visualize a sphere that represent earth
-			op.publishEarth(); // TODO non so perche' non riesca a stamparlo solo una volta
 
 			fileNotFinished = op.processNextEpoch();
 
@@ -50,7 +50,6 @@ int main(int argc, char **argv)
 		}
 
 		op.publishSatsPositions();
-
 
 		i++;
 		loopRate.sleep();
