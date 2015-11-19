@@ -38,6 +38,8 @@ public:
 	void publishOdometry(int index); // TODO da togliere
 
 protected:
+	void initOdomPublishers();
+
 	void publishSat(int index);
 	void publishSatVelocity(int index);
 
@@ -54,7 +56,7 @@ public:
 protected:
 	RinexReader rr;
 
-	ros::Time current_time;
+	ros::Time currentTime;
 
 	std::vector<SatelliteMeasurement> sats;
 	std::vector<gpstk::Triple> vel;
@@ -65,8 +67,9 @@ protected:
 	// Publishers
 	ros::Publisher markerPub;
 
-	ros::Publisher odom_pub;
-	tf::TransformBroadcaster odom_broadcaster;
+	ros::Publisher odomAllPub;
+	std::vector<ros::Publisher> odomPub;
+	tf::TransformBroadcaster odomBroadcaster;
 
 	// provv: per gestire le dimensioni di stampa. forse e' meglio un enum
 	double scale;

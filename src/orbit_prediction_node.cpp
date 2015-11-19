@@ -8,11 +8,11 @@ OrbitPredictionNode::OrbitPredictionNode(char *path_obs, char *path_nav):
 {
 	// Initialize measurements publisher
 	markerPub = nh.advertise<visualization_msgs::Marker>("/visualization_marker", 1000);
-	odom_pub = nh.advertise<nav_msgs::Odometry>("/odom", 50);
+	odomAllPub = nh.advertise<nav_msgs::Odometry>("/odom_all", 50);
 
 	scale = KILOMETERS;
 
-	current_time = ros::Time::now(); // todo forse togli
+	currentTime = ros::Time::now(); // todo forse togli
 }
 
 ///
@@ -27,7 +27,12 @@ bool OrbitPredictionNode::processNextEpoch()
 
 	cout << RinexReader::timePretty(rr.getEpochTime()) << " <---" << endl;
 
-	current_time = ros::Time::now();//dovrebbe essere = getEpochTime
+	currentTime = ros::Time::now();//dovrebbe essere = getEpochTime
+
+
+
+	initOdomPublishers();
+
 
 	return ! rr.isFileFinished();
 }
@@ -35,7 +40,7 @@ bool OrbitPredictionNode::processNextEpoch()
 void OrbitPredictionNode::computeSatsPositionAfter(double offset)
 {
 	rr.updateMeasurementAtTime(rr.getEpochTime() + offset);
-	current_time = ros::Time::now();//dovrebbe essere = getEpochTime + offset
+	currentTime = ros::Time::now();//dovrebbe essere = getEpochTime + offset
 
 	sats = rr.getMeasurements();
 	vel = rr.getSatVelocities();
@@ -54,7 +59,7 @@ void OrbitPredictionNode::publishEarth()
 {
 	visualization_msgs::Marker m;
 	m.header.frame_id = "ecef";
-	m.header.stamp = current_time;
+	m.header.stamp = currentTime;
 
 	// Set the namespace and id for this marker.  This serves to create a unique ID
 	// Any marker sent with the same namespace and id will overwrite the old one
@@ -101,7 +106,7 @@ void OrbitPredictionNode::publishSat(int index)
 {
 	visualization_msgs::Marker m;
 	m.header.frame_id = "ecef";
-	m.header.stamp = current_time;
+	m.header.stamp = currentTime;
 
 	// Set the namespace and id for this marker.  This serves to create a unique ID
 	// Any marker sent with the same namespace and id will overwrite the old one
@@ -149,7 +154,7 @@ void OrbitPredictionNode::publishSatVelocity(int index)
 {
 	visualization_msgs::Marker m;
 	m.header.frame_id = "ecef";
-	m.header.stamp = current_time;
+	m.header.stamp = currentTime;
 
 	// Set the namespace and id for this marker.  This serves to create a unique ID
 	// Any marker sent with the same namespace and id will overwrite the old one
@@ -209,30 +214,33 @@ void OrbitPredictionNode::publishOdometry(int index)
 	/// perche devo pubblicare i messaggi in un topic
 	/// separato per ogni satellite
 
+	geometry_msgs::Quaternion odom_quat;
+	odom_quat.x = 0;
+	odom_quat.y = 0;
+	odom_quat.z = 0;
+	odom_quat.w = 1;
+
 	///
 	/// first, we'll publish the transform over tf
 	///
 	geometry_msgs::TransformStamped odom_trans;
-	odom_trans.header.stamp = current_time;
+	odom_trans.header.stamp = currentTime;
 	odom_trans.header.frame_id = "ecef";
 	odom_trans.child_frame_id = "base_link";
 
 	odom_trans.transform.translation.x = sats[index].pos.getX() * scale;
 	odom_trans.transform.translation.y = sats[index].pos.getY() * scale;
 	odom_trans.transform.translation.z = sats[index].pos.getZ() * scale;
-	odom_trans.transform.rotation.x = 1;
-	odom_trans.transform.rotation.y = 0;
-	odom_trans.transform.rotation.z = 0;
-	odom_trans.transform.rotation.w = 0;
+	odom_trans.transform.rotation = odom_quat;
 
 	//send the transform
-	odom_broadcaster.sendTransform(odom_trans);
+	odomBroadcaster.sendTransform(odom_trans);
 
 	///
 	/// publish the odometry message over ROS
 	///
 	nav_msgs::Odometry odom;
-	odom.header.stamp = current_time;
+	odom.header.stamp = currentTime;
 	odom.header.frame_id = "ecef";
 
 	//set the position
@@ -241,10 +249,7 @@ void OrbitPredictionNode::publishOdometry(int index)
 	odom.pose.pose.position.z = sats[index].pos.getZ() * scale;
 
 	//set the orientation
-	odom.pose.pose.orientation.x = 1;
-	odom.pose.pose.orientation.y = 0;
-	odom.pose.pose.orientation.z = 0;
-	odom.pose.pose.orientation.w = 0;
+	odom.pose.pose.orientation = odom_quat;
 
 	//set the velocity
 	odom.child_frame_id = "base_link";
@@ -256,7 +261,31 @@ void OrbitPredictionNode::publishOdometry(int index)
 	odom.twist.twist.angular.z = 0;
 
 	//publish the message
-	odom_pub.publish(odom);
+	odomPub[index].publish(odom);
+	odomAllPub.publish(odom);
+}
+
+///
+/// \brief OrbitPredictionNode::initOdomPublishers
+/// TO BE CALLED EVERY TIME SATELLITES CHANGE!
+///
+/// Comunque non mi piace molto come soluzione
+/// perche'se perdo un satellite e il momento dopo ne aggiungo uno nuovo,
+/// viene pubblicato nello stesso canale
+/// potrei ad esempio concatenare ilnome del satellite al posto che il numero
+///
+void OrbitPredictionNode::initOdomPublishers()
+{
+	odomPub.resize(sats.size());
+
+	for (int i = 0; i < odomPub.size(); ++i) {
+
+		std::stringstream ss;
+		ss << "/odom" << i;
+
+		odomPub[i] = nh.advertise<nav_msgs::Odometry>(ss.str(), 50);
+	}
+
 }
 
 
@@ -268,7 +297,7 @@ void OrbitPredictionNode::publishXAxis(int index)
 
 	// Set the namespace and id for this marker.  This serves to create a unique ID
 	// Any marker sent with the same namespace and id will overwrite the old one
-	m.ns = "quat(1,0,0,0)";
+	m.ns = "xAxis";
 	m.id = index;
 
 	// Set the marker type.
