@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 
 	OrbitPredictionNode op(argv[1], argv[2]);
 
-	ros::Rate loopRate(500);
+	ros::Rate loopRate(600);
 
 	int i = 0;
 	bool fileNotFinished = true;
