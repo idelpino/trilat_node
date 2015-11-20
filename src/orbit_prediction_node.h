@@ -15,7 +15,8 @@
 
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
-//#include <Quaternion.h>
+
+#include <Eigen/Geometry> // to calculate quaternion
 
 class OrbitPredictionNode
 {

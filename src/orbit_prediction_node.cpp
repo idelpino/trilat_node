@@ -137,7 +137,7 @@ void OrbitPredictionNode::publishSat(int index)
 	m.color.r = 1.0f;
 	m.color.g = 0.0f;
 	m.color.b = 0.0f;
-	m.color.a = 1.0;
+	m.color.a = 0.5;
 
 	m.lifetime = ros::Duration();
 
@@ -147,91 +147,21 @@ void OrbitPredictionNode::publishSat(int index)
 	publishSatVelocity(index);
 	publishOdometry(index);
 
-	//stampeDiDebug(index);
 	publishSatVelocity2(index);
 
 }
 
-//void OrbitPredictionNode::stampeDiDebug(int id)
-//{
-//	double x =  sats[id].pos.getX() * scale;
-//	double y =  sats[id].pos.getY() * scale;
-//	double z =  sats[id].pos.getZ() * scale;
-
-
-//	double vx = vel[id][0] * scale;
-//	double vy = vel[id][1] * scale;
-//	double vz = vel[id][2] * scale;
-
-//	double norm = sqrt(vx*vx + vy*vy + vz*vz);
-
-//	publishDebugArrow(1, x, y, z, vx/norm, 0, 0, 0, 1, 0, 0);
-//	publishDebugArrow(2, x, y, z, 0, vy/norm, 0, 0, 1, 0, 0);
-//	publishDebugArrow(3, x, y, z, 0, 0, vz/norm, 0, 1, 0, 0);
-//	publishDebugArrow(1, x, y, z, vx/norm, 0, 0, 1, 0, 1, 0);
-//	publishDebugArrow(2, x, y, z, 0, vy/norm, 0, 1, 0, 1, 0);
-//	publishDebugArrow(3, x, y, z, 0, 0, vz/norm, 1, 0, 1, 0);
-
-
-//}
-
-
-//void OrbitPredictionNode::publishDebugArrow(int id,
-//				double x, double y, double z,
-//				double xx, double yy, double zz, double ww,
-//				double r, double g, double b)
-//{
-//	visualization_msgs::Marker m;
-//	m.header.frame_id = "world";
-//	m.header.stamp = currentTime;
-
-//	// Set the namespace and id for this marker.  This serves to create a unique ID
-//	// Any marker sent with the same namespace and id will overwrite the old one
-//	m.ns = "debug";
-//	m.id = id;
-
-//	// Set the marker type.
-//	m.type = visualization_msgs::Marker::ARROW;
-
-//	// Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
-//	m.action = visualization_msgs::Marker::ADD;
-
-//	// Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
-//	m.pose.position.x = x;
-//	m.pose.position.y = y;
-//	m.pose.position.z = z;
-
-//	m.pose.orientation.x = xx;
-//	m.pose.orientation.y = yy;
-//	m.pose.orientation.z = zz;
-//	m.pose.orientation.w = ww;
-
-
-
-//	// Set the scale of the marker -- 1x1x1 here means 1m on a side
-//	m.scale.x = 2000;
-//	m.scale.y = 100;
-//	m.scale.z = 100;
-
-//	// Set the color -- be sure to set alpha to something non-zero!
-//	m.color.r = r;
-//	m.color.g = g;
-//	m.color.b = b;
-//	m.color.a = 1.0;
-
-//	m.lifetime = ros::Duration();
-
-//	markerPub.publish(m);
-//}
-
+///
+/// \brief OrbitPredictionNode::publishSatVelocity
+/// \param index
+///
+/// Print a marker representing the velocity vector
+/// using the 2 endings
+///
 void OrbitPredictionNode::publishSatVelocity(int index)
 {
 	visualization_msgs::Marker m;
-
-	std::stringstream ss;
-	ss << "sat_" << index;
-	m.header.frame_id = ss.str();
-
+	m.header.frame_id = "world";
 	m.header.stamp = currentTime;
 
 	// Set the namespace and id for this marker.  This serves to create a unique ID
@@ -256,14 +186,14 @@ void OrbitPredictionNode::publishSatVelocity(int index)
 //	m.pose.orientation.w = 1.0;
 
 	geometry_msgs::Point p1;
-	p1.x = 0;
-	p1.y = 0;
-	p1.z = 0;
+	p1.x = sats[index].pos.getX() * scale;
+	p1.y = sats[index].pos.getY() * scale;
+	p1.z = sats[index].pos.getZ() * scale;
 
 	geometry_msgs::Point p2;
-	p2.x = vel[index][0] * 500 * scale;
-	p2.y = vel[index][1] * 500 * scale;
-	p2.z = vel[index][2] * 500 * scale;
+	p2.x = (sats[index].pos.getX() + vel[index][0]*500) * scale;
+	p2.y = (sats[index].pos.getY() + vel[index][1]*500) * scale;
+	p2.z = (sats[index].pos.getZ() + vel[index][2]*500) * scale;
 
 	m.points.push_back(p1);
 	m.points.push_back(p2);
@@ -289,15 +219,13 @@ void OrbitPredictionNode::publishSatVelocity(int index)
 /// \brief OrbitPredictionNode::publishSatVelocity2
 /// \param index
 ///
-/// TODO in sta funzione vorrei riuscire a stampare il vettore
-/// velocita come quaternione
+/// Print a marker representing the velocity vector
+/// through quaternion
 ///
 void OrbitPredictionNode::publishSatVelocity2(int index)
 {
 	std::stringstream ss;
 	ss << "sat_" << index;
-
-
 	visualization_msgs::Marker m;
 	m.header.frame_id = ss.str();
 	m.header.stamp = currentTime;
@@ -313,6 +241,18 @@ void OrbitPredictionNode::publishSatVelocity2(int index)
 	// Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
 	m.action = visualization_msgs::Marker::ADD;
 
+	double x =  sats[index].pos.getX() * scale;
+	double y =  sats[index].pos.getY() * scale;
+	double z =  sats[index].pos.getZ() * scale;
+	double vx = vel[index][0] * scale;
+	double vy = vel[index][1] * scale;
+	double vz = vel[index][2] * scale;
+
+	Eigen::Vector3d axesX(1, 0, 0);
+	Eigen::Vector3d directionVector(vx, vy, vz);
+	Eigen::Quaterniond quatX2Direction;
+
+
 
 	///
 	/// Disegna freccia con position + orientation
@@ -321,31 +261,13 @@ void OrbitPredictionNode::publishSatVelocity2(int index)
 	m.pose.position.x = 0;
 	m.pose.position.y = 0;
 	m.pose.position.z = 0;
-	m.pose.orientation.x = vel[index][0] * scale;
-	m.pose.orientation.y = vel[index][1] * scale;
-	m.pose.orientation.z = vel[index][2] * scale;
-	m.pose.orientation.w = 0;
+	m.pose.orientation.x = quatX2Direction.x();
+	m.pose.orientation.y = quatX2Direction.y();
+	m.pose.orientation.z = quatX2Direction.z();
+	m.pose.orientation.w = quatX2Direction.w();
 	m.scale.x = 2000;
 	m.scale.y = 100;
 	m.scale.z = 100;
-
-//	///
-//	/// Disegna freccia con gli estremi
-//	///
-//	geometry_msgs::Point p1;
-//	p1.x = 0;
-//	p1.y = 0;
-//	p1.z = 0;
-//	geometry_msgs::Point p2;
-//	p2.x = (vel[index][0]*500) * scale;
-//	p2.y = (vel[index][1]*500) * scale;
-//	p2.z = (vel[index][2]*500) * scale;
-//	m.points.push_back(p1);
-//	m.points.push_back(p2);
-//	m.scale.x = 100000*scale;
-//	m.scale.y = 100000*scale;
-//	m.scale.z = 0;
-
 
 	// Set the color -- be sure to set alpha to something non-zero!
 	m.color.r = 0.0f;
@@ -360,32 +282,31 @@ void OrbitPredictionNode::publishSatVelocity2(int index)
 
 void OrbitPredictionNode::publishOdometry(int index)
 {
+
+	double x =  sats[index].pos.getX() * scale;
+	double y =  sats[index].pos.getY() * scale;
+	double z =  sats[index].pos.getZ() * scale;
+	double vx = vel[index][0] * scale;
+	double vy = vel[index][1] * scale;
+	double vz = vel[index][2] * scale;
+
+	Eigen::Vector3d axesX(1, 0, 0);
+	Eigen::Vector3d directionVector(vx, vy, vz);
+	Eigen::Quaterniond quatX2Direction;
+
+	//quaternione che fa ruotare l'asse x in modo che combaci con il vettore velocita'
+	quatX2Direction.setFromTwoVectors(axesX, directionVector);
+
 	geometry_msgs::Quaternion odom_quat;
-	odom_quat.x = 0;
-	odom_quat.y = 0;
-	odom_quat.z = 0;
-	odom_quat.w = 1;
-
-
-//	double vx = vel[index][0];
-//	double vy = vel[index][1];
-//	double vz = vel[index][2];
-
-//	double roll = 0;
-//	double pitch = atan( sqrt(vx*vx + vy*vy ) / vz );
-//	double yaw = atan (vx/-vy);
-
-//	odom_quat = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw);
-
-
+	odom_quat.x = quatX2Direction.x();
+	odom_quat.y = quatX2Direction.y();
+	odom_quat.z = quatX2Direction.z();
+	odom_quat.w = quatX2Direction.w();
 
 
 
 	std::stringstream ss;
 	ss << "sat_" << index;
-
-
-
 	///
 	/// first, we'll publish the transform over tf
 	///
@@ -401,6 +322,7 @@ void OrbitPredictionNode::publishOdometry(int index)
 
 	//send the transform
 	odomBroadcaster.sendTransform(odom_trans);
+
 
 	///
 	/// publish the odometry message over ROS
@@ -430,6 +352,7 @@ void OrbitPredictionNode::publishOdometry(int index)
 	odomPub[index].publish(odom);
 	odomAllPub.publish(odom);
 }
+
 
 //void OrbitPredictionNode::publishOdometry(int index)
 //{
@@ -519,6 +442,10 @@ void OrbitPredictionNode::publishOdometry(int index)
 //	odomPub[index].publish(odom);
 //	odomAllPub.publish(odom);
 //}
+//	double roll = 0;
+//	double pitch = atan( sqrt(vx*vx + vy*vy ) / vz );
+//	double yaw = atan (vx/-vy);
+//	odom_quat = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw);
 
 ///
 /// \brief OrbitPredictionNode::initOdomPublishers
