@@ -14,9 +14,29 @@
 #include "../include/rinex_reader/src/rinex_reader.h"
 
 #include <tf/transform_broadcaster.h>
+#include <tf/transform_listener.h>
 #include <nav_msgs/Odometry.h>
 
 #include <Eigen/Geometry> // to calculate quaternion
+
+
+
+///
+/// TODO link utili
+///
+/// http://eigen.tuxfamily.org/dox/group__TutorialGeometry.html
+///
+/// http://docs.ros.org/jade/api/tf/html/c++/transform__datatypes_8h.html
+/// http://docs.ros.org/jade/api/tf/html/c++/classtf_1_1Quaternion.html
+
+
+///
+///
+/// Quaternion<float> q;  q = AngleAxis<float>(angle_in_radian, axis);
+/// axis va normalizzato
+///
+
+
 
 class OrbitPredictionNode
 {
@@ -45,8 +65,14 @@ protected:
 	void publishSat(int index);
 	void publishSatVelocity(int index);
 	void publishSatVelocity2(int index);
+	//void publishEarthVector(int index);
+	void publishEarthVectorSERIO(int index, Eigen::Vector3d earth);
 
 
+	std::string getSatelliteName(int index);
+
+	Eigen::Vector3d findWorldFromSatelliteSERIO(int index, Eigen::Vector3d translation, Eigen::Quaterniond rotation);
+	//Eigen::Vector3d findWorldFromSatellite(int index);
 
 	// todo
 	void publishDebugArrow(int id, double x, double y, double z,
@@ -56,6 +82,8 @@ protected:
 	void stampeDiDebug(int id);
 
 public:
+	const std::string WORLD_FRAME = "world";
+
 	const double EARTH_RADIUS = 6371000; // meters
 	const double METERS = 1;
 	const double KILOMETERS = METERS/1000;
@@ -77,7 +105,9 @@ protected:
 
 	ros::Publisher odomAllPub;
 	std::vector<ros::Publisher> odomPub;
-	tf::TransformBroadcaster odomBroadcaster;
+	tf::TransformBroadcaster transBroadcaster;
+
+	tf::TransformListener transListener; // todo vedi se serve
 
 	// provv: per gestire le dimensioni di stampa. forse e' meglio un enum
 	double scale;
