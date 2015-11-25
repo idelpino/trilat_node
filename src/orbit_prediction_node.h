@@ -45,12 +45,12 @@ protected:
 	void publishSatVelocityThroughEndings(int index);
 	void publishSatVelocity(int index);
 	//void publishEarthVector(int index);
-	void publishEarthVectorSERIO(int index, Eigen::Vector3d earth);
+	void publishEarthVectorSERIO(int index, const Eigen::Vector3d &earth);
 
 
 	std::string getSatelliteFrame(int index);
 
-	Eigen::Vector3d findWorldFromSatelliteSERIO(int index, Eigen::Vector3d translation, Eigen::Quaterniond rotation);
+	Eigen::Vector3d findWorldFromSatelliteSERIO(int index, const Eigen::Vector3d &translation, const Eigen::Quaterniond &rotation);
 
 
 public:

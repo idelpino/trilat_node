@@ -247,7 +247,7 @@ void OrbitPredictionNode::publishSatVelocity(int index)
 }
 
 
-void OrbitPredictionNode::publishEarthVectorSERIO(int index, Eigen::Vector3d earth)
+void OrbitPredictionNode::publishEarthVectorSERIO(int index, const Eigen::Vector3d &earth)
 {
 	visualization_msgs::Marker m;
 	m.header.frame_id = getSatelliteFrame(index);
@@ -405,7 +405,7 @@ void OrbitPredictionNode::publishOdometry(int index, const Eigen::Quaterniond &r
 ///
 
 Eigen::Vector3d OrbitPredictionNode::findWorldFromSatelliteSERIO(int index,
-								Eigen::Vector3d translation, Eigen::Quaterniond rotation)
+								const Eigen::Vector3d &translation, const Eigen::Quaterniond &rotation)
 {
 	Eigen::Vector3d pEarth(0, 0, 0); // punto che voglio trovare nelle altre coordinate
 	Eigen::Vector3d pSat; // risultato
