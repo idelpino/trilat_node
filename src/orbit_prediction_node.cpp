@@ -58,57 +58,6 @@ void OrbitPredictionNode::publishSatsPositions()
 	}
 }
 
-void OrbitPredictionNode::publishEarth()
-{
-	visualization_msgs::Marker m;
-	m.header.frame_id = WORLD_FRAME;
-	m.header.stamp = currentTime;
-
-	// Set the namespace and id for this marker.  This serves to create a unique ID
-	// Any marker sent with the same namespace and id will overwrite the old one
-	m.ns = "earth";
-	m.id = 0;
-
-	// Set the marker type.
-	m.type = visualization_msgs::Marker::SPHERE;
-
-	// Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
-	m.action = visualization_msgs::Marker::ADD;
-
-	// Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
-	m.pose.position.x = 0;
-	m.pose.position.y = 0;
-	m.pose.position.z = 0;
-	m.pose.orientation.x = 0.0;
-	m.pose.orientation.y = 0.0;
-	m.pose.orientation.z = 0.0;
-	m.pose.orientation.w = 1.0;
-
-	// Set the scale of the marker -- 1x1x1 here means 1m on a side
-	m.scale.x = EARTH_RADIUS * scale;
-	m.scale.y = EARTH_RADIUS * scale;
-	m.scale.z = EARTH_RADIUS * scale;
-
-	// Set the color -- be sure to set alpha to something non-zero!
-	m.color.r = 0.0f;
-	m.color.g = 1.0f;
-	m.color.b = 0.0f;
-	m.color.a = 0.1;
-
-	m.lifetime = ros::Duration();
-
-	markerPub.publish(m);
-}
-
-///
-/// \brief OrbitPredictionNode::setScale
-/// \param value
-///
-void OrbitPredictionNode::setScale(double value)
-{
-	scale = value;
-}
-
 ///
 /// \brief OrbitPredictionNode::publishSat
 /// \param index
@@ -151,11 +100,17 @@ void OrbitPredictionNode::publishSat(int index)
 	publishSatVelocity(index);//basato su quaternione
 
 
-
 	Eigen::Quaterniond rotation = rotateSatelliteFrame(index);
 
-
 	publishOdometry(index, rotation);
+
+
+	//TODO anche sta roba forse andrebbe messa fuori
+	//publish earth vector
+	Eigen::Vector3d translation(sats[index].pos.getX() * scale, sats[index].pos.getY() * scale, sats[index].pos.getZ() * scale);
+	Eigen::Vector3d earth = getEarthFromSatellite(index, translation, rotation);
+
+	publishEarthVector(index, earth);
 
 }
 
@@ -364,6 +319,7 @@ Eigen::Quaterniond OrbitPredictionNode::rotateSatelliteFrame(int index)
 	return rotation;
 }
 
+
 ///
 /// \brief OrbitPredictionNode::publishOdometry
 /// \param index
@@ -400,11 +356,6 @@ void OrbitPredictionNode::publishOdometry(int index, const Eigen::Quaterniond &r
 	odomPub[index].publish(odom);
 	odomAllPub.publish(odom);
 
-	//publish earth vector
-	Eigen::Vector3d translation(sats[index].pos.getX() * scale, sats[index].pos.getY() * scale, sats[index].pos.getZ() * scale);
-	Eigen::Vector3d earth = findEarthFromSatellite(index, translation, rotation);
-
-	publishEarthVector(index, earth);
 }
 
 
@@ -415,7 +366,7 @@ void OrbitPredictionNode::publishOdometry(int index, const Eigen::Quaterniond &r
 ///
 
 
-Eigen::Vector3d OrbitPredictionNode::findEarthFromSatellite(int index,
+Eigen::Vector3d OrbitPredictionNode::getEarthFromSatellite(int index,
 					const Eigen::Vector3d &translation, const Eigen::Quaterniond &rotation)
 {
 	Eigen::Vector3d pEarth(0, 0, 0); // punto che voglio trovare nelle altre coordinate
@@ -461,3 +412,56 @@ std::string OrbitPredictionNode::getSatelliteFrame(int index)
 	return ss.str();
 }
 
+///
+/// \brief OrbitPredictionNode::publishEarth
+///
+void OrbitPredictionNode::publishEarth()
+{
+	visualization_msgs::Marker m;
+	m.header.frame_id = WORLD_FRAME;
+	m.header.stamp = currentTime;
+
+	// Set the namespace and id for this marker.  This serves to create a unique ID
+	// Any marker sent with the same namespace and id will overwrite the old one
+	m.ns = "earth";
+	m.id = 0;
+
+	// Set the marker type.
+	m.type = visualization_msgs::Marker::SPHERE;
+
+	// Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
+	m.action = visualization_msgs::Marker::ADD;
+
+	// Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
+	m.pose.position.x = 0;
+	m.pose.position.y = 0;
+	m.pose.position.z = 0;
+	m.pose.orientation.x = 0.0;
+	m.pose.orientation.y = 0.0;
+	m.pose.orientation.z = 0.0;
+	m.pose.orientation.w = 1.0;
+
+	// Set the scale of the marker -- 1x1x1 here means 1m on a side
+	m.scale.x = EARTH_RADIUS * scale;
+	m.scale.y = EARTH_RADIUS * scale;
+	m.scale.z = EARTH_RADIUS * scale;
+
+	// Set the color -- be sure to set alpha to something non-zero!
+	m.color.r = 0.0f;
+	m.color.g = 1.0f;
+	m.color.b = 0.0f;
+	m.color.a = 0.1;
+
+	m.lifetime = ros::Duration();
+
+	markerPub.publish(m);
+}
+
+///
+/// \brief OrbitPredictionNode::setScale
+/// \param value
+///
+void OrbitPredictionNode::setScale(double value)
+{
+	scale = value;
+}

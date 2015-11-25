@@ -49,7 +49,7 @@ protected:
 
 	std::string getSatelliteFrame(int index);
 
-	Eigen::Vector3d findEarthFromSatellite(int index, const Eigen::Vector3d &translation, const Eigen::Quaterniond &rotation);
+	Eigen::Vector3d getEarthFromSatellite(int index, const Eigen::Vector3d &translation, const Eigen::Quaterniond &rotation);
 
 
 public:
