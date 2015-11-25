@@ -150,7 +150,12 @@ void OrbitPredictionNode::publishSat(int index)
 	publishSatVelocityThroughEndings(index); //basato su 2 punti estremi
 	publishSatVelocity(index);//basato su quaternione
 
-	publishOdometry(index);
+
+
+	Eigen::Quaterniond rotation = rotateSatelliteFrame(index);
+
+
+	publishOdometry(index, rotation);
 
 }
 
@@ -293,47 +298,39 @@ void OrbitPredictionNode::publishEarthVectorSERIO(int index, Eigen::Vector3d ear
 //	markerPub.publish(m);
 }
 
-
-
-
-/// Sta funzione ora non pubblica solamente l'odometria, ma ruota anche il
-/// sistema di riferimento
-/// sarebbe da separare in 2 funzioni
-///  TODO
-/// // TODO torna qui
-void OrbitPredictionNode::publishOdometry(int index)
+///
+/// \brief OrbitPredictionNode::rotateSatelliteFrame Rotate the satellite's frame
+///		in order to allign x axes with satellite's velocity
+/// \param index
+/// \return quaternion representing rotation
+///
+Eigen::Quaterniond OrbitPredictionNode::rotateSatelliteFrame(int index)
 {
-	Eigen::Vector3d satVelocity(vel[index][0] * scale, vel[index][1] * scale, vel[index][2] * scale);
-	Eigen::Quaterniond rotationX2Direction;
+	Eigen::Quaterniond rotation;
 
+	Eigen::Vector3d satVelocity(vel[index][0] * scale, vel[index][1] * scale, vel[index][2] * scale);
 
 	//quaternione che fa ruotare l'asse x in modo che combaci con il vettore velocita'
-	rotationX2Direction.setFromTwoVectors(Eigen::Vector3d::UnitX(), satVelocity);
+	rotation.setFromTwoVectors(Eigen::Vector3d::UnitX(), satVelocity);
 
 
-
-
-//	//provo a concatenare le 2 rotaizoni
-
-//	Eigen::Vector3d translation(sats[index].pos.getX() * scale, sats[index].pos.getY() * scale, sats[index].pos.getZ() * scale);
-//	Eigen::Vector3d earth = findWorldFromSatelliteSERIO(index, translation, rotationX2Direction);
-//	Eigen::Quaterniond quatY2Earth;
-//	quatY2Earth.setFromTwoVectors(Eigen::Vector3d::UnitY(), earth);
-
-//	rotationX2Direction = rotationX2Direction*quatY2Earth;
+	//TODO prova a concatenare un'altra rotazione in modo che x=velocita' e y=puntatore alla terra
+	//	Eigen::Vector3d translation(sats[index].pos.getX() * scale, sats[index].pos.getY() * scale, sats[index].pos.getZ() * scale);
+	//	Eigen::Vector3d earth = findWorldFromSatelliteSERIO(index, translation, rotationX2Direction);
+	//	Eigen::Quaterniond quatY2Earth;
+	//	quatY2Earth.setFromTwoVectors(Eigen::Vector3d::UnitY(), earth);
+	//	rotationX2Direction = rotationX2Direction*quatY2Earth;
 
 
 
 	geometry_msgs::Quaternion odom_quat;
-	odom_quat.x = rotationX2Direction.x();
-	odom_quat.y = rotationX2Direction.y();
-	odom_quat.z = rotationX2Direction.z();
-	odom_quat.w = rotationX2Direction.w();
+	odom_quat.x = rotation.x();
+	odom_quat.y = rotation.y();
+	odom_quat.z = rotation.z();
+	odom_quat.w = rotation.w();
 
 
-	///
-	/// first, we'll publish the transform over tf
-	///
+	// Publish the transform over tf
 	geometry_msgs::TransformStamped odom_trans;
 	odom_trans.header.stamp = currentTime;
 	odom_trans.header.frame_id = WORLD_FRAME;				//frame padre
@@ -346,18 +343,19 @@ void OrbitPredictionNode::publishOdometry(int index)
 	//send the transform
 	transBroadcaster.sendTransform(odom_trans);
 
-	/*
-	 * TODO: separa le 2 funzioni!!
-	 *
-	 * da qui in su e' la funzione che effettivamente ruota i frames
-	 * dei satelliti.
-	 *
-	 * da qui in giu pubblica solamente il messaggio odometria per ros!
-	 */
 
-	///
+	return rotation;
+}
+
+
+/// Sta funzione ora non pubblica solamente l'odometria, ma ruota anche il
+/// sistema di riferimento
+/// sarebbe da separare in 2 funzioni
+///  TODO
+/// // TODO torna qui
+void OrbitPredictionNode::publishOdometry(int index, const Eigen::Quaterniond &rotation)
+{
 	/// publish the odometry message over ROS
-	///
 	nav_msgs::Odometry odom;
 	odom.header.stamp = currentTime;
 	odom.header.frame_id = WORLD_FRAME;
@@ -368,7 +366,10 @@ void OrbitPredictionNode::publishOdometry(int index)
 	odom.pose.pose.position.z = sats[index].pos.getZ() * scale;
 
 	//set the orientation
-	odom.pose.pose.orientation = odom_quat;
+	odom.pose.pose.orientation.x = rotation.x();
+	odom.pose.pose.orientation.y = rotation.y();
+	odom.pose.pose.orientation.z = rotation.z();
+	odom.pose.pose.orientation.w = rotation.w();
 
 	//set the velocity
 	odom.child_frame_id = getSatelliteFrame(index);
@@ -385,12 +386,14 @@ void OrbitPredictionNode::publishOdometry(int index)
 
 
 
-	//Eigen::Vector3d translation(sats[index].pos.getX() * scale, sats[index].pos.getY() * scale, sats[index].pos.getZ() * scale);
-	//todo rimetti Eigen::Vector3d earth = findWorldFromSatelliteSERIO(index, translation, rotationX2Direction);
+	Eigen::Vector3d translation(sats[index].pos.getX() * scale, sats[index].pos.getY() * scale, sats[index].pos.getZ() * scale);
+	Eigen::Vector3d earth = findWorldFromSatelliteSERIO(index, translation, rotation);
+
+
 	//findWorldFromSatellite(index);
 
 
-	//todo rimetti publishEarthVectorSERIO(index, earth);
+	publishEarthVectorSERIO(index, earth);
 
 }
 

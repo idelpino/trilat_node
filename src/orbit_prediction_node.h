@@ -35,7 +35,8 @@ public:
 	// to decide the scale of visualization
 	void setScale(double value);
 
-	void publishOdometry(int index); // TODO da togliere
+	Eigen::Quaterniond rotateSatelliteFrame(int index);
+	void publishOdometry(int index, const Eigen::Quaterniond &rotation); // TODO da togliere
 
 protected:
 	void initOdomPublishers();
