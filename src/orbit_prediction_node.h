@@ -36,7 +36,8 @@ public:
 	void setScale(double value);
 
 	Eigen::Quaterniond rotateSatelliteFrame(int index);
-	void publishOdometry(int index, const Eigen::Quaterniond &rotation); // TODO da togliere
+
+	void publishOdometry(int index, const Eigen::Quaterniond &rotation);
 
 protected:
 	void initOdomPublishers();
@@ -44,13 +45,11 @@ protected:
 	void publishSat(int index);
 	void publishSatVelocityThroughEndings(int index);
 	void publishSatVelocity(int index);
-	//void publishEarthVector(int index);
-	void publishEarthVectorSERIO(int index, const Eigen::Vector3d &earth);
-
+	void publishEarthVector(int index, const Eigen::Vector3d &earth);
 
 	std::string getSatelliteFrame(int index);
 
-	Eigen::Vector3d findWorldFromSatelliteSERIO(int index, const Eigen::Vector3d &translation, const Eigen::Quaterniond &rotation);
+	Eigen::Vector3d findEarthFromSatellite(int index, const Eigen::Vector3d &translation, const Eigen::Quaterniond &rotation);
 
 
 public:

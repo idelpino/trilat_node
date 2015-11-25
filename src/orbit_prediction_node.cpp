@@ -246,31 +246,35 @@ void OrbitPredictionNode::publishSatVelocity(int index)
 	markerPub.publish(m);
 }
 
-
-void OrbitPredictionNode::publishEarthVectorSERIO(int index, const Eigen::Vector3d &earth)
+///
+/// \brief OrbitPredictionNode::publishEarthVector
+/// \param index
+/// \param earth
+///
+void OrbitPredictionNode::publishEarthVector(int index, const Eigen::Vector3d &earth)
 {
 	visualization_msgs::Marker m;
 	m.header.frame_id = getSatelliteFrame(index);
 	m.header.stamp = currentTime;
 
-	m.ns = "earthPointerSERIO";
+	m.ns = "earthPointer";
 	m.id = index;
 
 	m.type = visualization_msgs::Marker::ARROW;
 
 	m.action = visualization_msgs::Marker::ADD;
 
-	// Find quaternion that point earth
-	Eigen::Quaterniond quatY2Earth;
-	quatY2Earth.setFromTwoVectors(Eigen::Vector3d::UnitX(), earth);
+	// Find quaternion that point to earth
+	Eigen::Quaterniond quatEarth;
+	quatEarth.setFromTwoVectors(Eigen::Vector3d::UnitX(), earth);
 
 	m.pose.position.x = 0;
 	m.pose.position.y = 0;
 	m.pose.position.z = 0;
-	m.pose.orientation.x = quatY2Earth.x();
-	m.pose.orientation.y = quatY2Earth.y();
-	m.pose.orientation.z = quatY2Earth.z();
-	m.pose.orientation.w = quatY2Earth.w();
+	m.pose.orientation.x = quatEarth.x();
+	m.pose.orientation.y = quatEarth.y();
+	m.pose.orientation.z = quatEarth.z();
+	m.pose.orientation.w = quatEarth.w();
 
 	m.scale.x = 3000;
 	m.scale.y = 200;
@@ -297,6 +301,19 @@ void OrbitPredictionNode::publishEarthVectorSERIO(int index, const Eigen::Vector
 
 //	markerPub.publish(m);
 }
+
+/// TODO  ******* TODO ****** TODO ****** TODO ****** TODO ****** TODO **********
+/// TODO  *																		*
+/// TODO  *																		*
+/// TODO  *	Prova a vedere se conviene NON routare i frame di ogni satellite	*
+/// TODO  *	ma lasciarli fissi e solamente trovare i vettori terra e velocita'	*
+/// TODO  *	In questo caso non servirebbe neanche fare conti complicati per		*
+/// TODO  *	trovare il centro della terra. (ora serve fare quat->rotationMatrix	*																*
+/// TODO  *	poi invertirla e moltiplicare										*
+/// TODO  *																		*
+/// TODO  *																		*
+/// TODO  ***********************************************************************
+
 
 ///
 /// \brief OrbitPredictionNode::rotateSatelliteFrame Rotate the satellite's frame
@@ -347,12 +364,11 @@ Eigen::Quaterniond OrbitPredictionNode::rotateSatelliteFrame(int index)
 	return rotation;
 }
 
-
-/// Sta funzione ora non pubblica solamente l'odometria, ma ruota anche il
-/// sistema di riferimento
-/// sarebbe da separare in 2 funzioni
-///  TODO
-/// // TODO torna qui
+///
+/// \brief OrbitPredictionNode::publishOdometry
+/// \param index
+/// \param rotation
+///
 void OrbitPredictionNode::publishOdometry(int index, const Eigen::Quaterniond &rotation)
 {
 	/// publish the odometry message over ROS
@@ -384,17 +400,11 @@ void OrbitPredictionNode::publishOdometry(int index, const Eigen::Quaterniond &r
 	odomPub[index].publish(odom);
 	odomAllPub.publish(odom);
 
-
-
+	//publish earth vector
 	Eigen::Vector3d translation(sats[index].pos.getX() * scale, sats[index].pos.getY() * scale, sats[index].pos.getZ() * scale);
-	Eigen::Vector3d earth = findWorldFromSatelliteSERIO(index, translation, rotation);
+	Eigen::Vector3d earth = findEarthFromSatellite(index, translation, rotation);
 
-
-	//findWorldFromSatellite(index);
-
-
-	publishEarthVectorSERIO(index, earth);
-
+	publishEarthVector(index, earth);
 }
 
 
@@ -404,8 +414,9 @@ void OrbitPredictionNode::publishOdometry(int index, const Eigen::Quaterniond &r
 /// ??TODO fare una funzione che converta da mondo a frame e viceversa??
 ///
 
-Eigen::Vector3d OrbitPredictionNode::findWorldFromSatelliteSERIO(int index,
-								const Eigen::Vector3d &translation, const Eigen::Quaterniond &rotation)
+
+Eigen::Vector3d OrbitPredictionNode::findEarthFromSatellite(int index,
+					const Eigen::Vector3d &translation, const Eigen::Quaterniond &rotation)
 {
 	Eigen::Vector3d pEarth(0, 0, 0); // punto che voglio trovare nelle altre coordinate
 	Eigen::Vector3d pSat; // risultato
