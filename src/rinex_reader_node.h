@@ -99,8 +99,11 @@ protected:
 
 protected:
 	ros::NodeHandle nh;								// ROS node handle
+
+	//Publishers
 	ros::Publisher measurementsPub;					// Publisher for measurements
-	ros::Publisher observationsPub;					// Publisher for observations (int the new format, see asterx1_node)
+	ros::Publisher observationsPub;					// Publisher for observations (int the new format, see asterx1_node)// Publisher
+	ros::Publisher realFixPub;
 
 	std::vector<SatelliteMeasurement> measurements;	// Measures obtained from satellites
 	std::vector<int> satIDs;						// Satellite ID paired to measurements vector (bag solution, but i don't have time to change everything, it's just a quick test

@@ -15,6 +15,7 @@ RinexReaderNode::RinexReaderNode(char* path_obs, char* path_nav/*, char *path_me
 	// Initialize measurements publisher
 	measurementsPub = nh.advertise<trilateration::satMeasurementArray>("/gps_measurements", 1000);
 	observationsPub = nh.advertise<asterx1_node::SatPrArray>("/sat_pseudoranges", 1000);
+	realFixPub = nh.advertise<iri_asterx1_gps::NavSatFix_ecef>("/real_fix", 5000);
 
 	// Initialize all the stuff related to gpstk
 	gpstkInit();
@@ -184,6 +185,21 @@ int RinexReaderNode::processNextEpoch()
 		fileFinished = true;
 	}
 
+	/*
+	 * Publish true position.
+	 * true means the one calculated with raimsolver by gpstk
+	 */
+	Receiver truePos = getReceiverECEF();
+	iri_asterx1_gps::NavSatFix_ecef estFixMsg;
+	//TODO fill up header etc
+	estFixMsg.x = truePos.pos.getX();
+	estFixMsg.y = truePos.pos.getY();
+	estFixMsg.z = truePos.pos.getZ();
+
+	realFixPub.publish(estFixMsg);
+
+
+
 	return 0;//TODO torna i codici sensati di raimcompute ad esempio
 }
 
@@ -199,7 +215,7 @@ void RinexReaderNode::publishMeasurements()
 	{
 		asterx1_node::SatPr ob;
 
-		ob.sat_id = satIDs[i];//TODO è sbagliato ma amen per ora, soluz temporanea
+		ob.sat_id = satIDs[i];
 
 		ob.x = meas.x = measurements.at(i).pos.getX();
 		ob.y = meas.y = measurements.at(i).pos.getY();
