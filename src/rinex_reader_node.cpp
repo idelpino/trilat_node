@@ -14,6 +14,7 @@ RinexReaderNode::RinexReaderNode(char* path_obs, char* path_nav/*, char *path_me
 {
 	// Initialize measurements publisher
 	measurementsPub = nh.advertise<trilateration::satMeasurementArray>("/gps_measurements", 1000);
+	observationsPub = nh.advertise<asterx1_node::SatPrArray>("/sat_pseudoranges", 1000);
 
 	// Initialize all the stuff related to gpstk
 	gpstkInit();
@@ -27,6 +28,9 @@ RinexReaderNode::~RinexReaderNode()
 
 int RinexReaderNode::processNextEpoch()
 {
+	measurements.clear();
+	satIDs.clear();
+	
 	if(rObsFile >> rObsData)
 	{
 		fileFinished = false;
@@ -169,6 +173,7 @@ int RinexReaderNode::processNextEpoch()
 				sm.pseudorange = calcPos[i][3];
 
 				measurements.push_back(sm);
+				satIDs.push_back(prnVec[i].id);
 			}
 
 			//TODO guarda se ho assegnato la soluzione ai cosi della classe
@@ -187,16 +192,28 @@ void RinexReaderNode::publishMeasurements()
 	trilateration::satMeasurement meas;
 	trilateration::satMeasurementArray msg;
 
-	for (int i = 0; i < measurements.size(); ++i) {
-		meas.x = measurements.at(i).pos.getX();
-		meas.y = measurements.at(i).pos.getY();
-		meas.z = measurements.at(i).pos.getZ();
-		meas.pseudorange = measurements.at(i).pseudorange;
+	asterx1_node::SatPrArray observation;
+	
+
+	for (int i = 0; i < measurements.size(); ++i)
+	{
+		asterx1_node::SatPr ob;
+
+		ob.sat_id = satIDs[i];//TODO è sbagliato ma amen per ora, soluz temporanea
+
+		ob.x = meas.x = measurements.at(i).pos.getX();
+		ob.y = meas.y = measurements.at(i).pos.getY();
+		ob.z = meas.z = measurements.at(i).pos.getZ();
+		ob.pseudorange = meas.pseudorange = measurements.at(i).pseudorange;
 
 		msg.measurements.push_back(meas);
+		observation.measurements.push_back(ob);
 	}
 
 	measurementsPub.publish(msg);
+	observationsPub.publish(observation);
+
+
 }
 
 void RinexReaderNode::gpstkInit()

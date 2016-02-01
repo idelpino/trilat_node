@@ -30,6 +30,11 @@ bool OrbitPredictionNode::processNextEpoch()
 	sats = rr.getMeasurements();
 	vel = rr.getSatVelocities();
 
+	for(int i=0; i<sats.size(); ++i)
+	{
+		cout << sats[i].toString() << endl;
+	}
+
 	cout << RinexReader::timePretty(rr.getEpochTime()) << " <--- from rinex file" << endl;
 
 	currentTime = ros::Time::now();//todo dovrebbe essere = getEpochTime
@@ -91,7 +96,7 @@ void OrbitPredictionNode::publishSat(int index)
 	m.color.b = 0.0f;
 	m.color.a = 0.5;
 
-	m.lifetime = ros::Duration();
+	m.lifetime = ros::Duration(0.5);
 
 	markerPub.publish(m);
 
@@ -256,18 +261,6 @@ void OrbitPredictionNode::publishEarthVector(int index, const Eigen::Vector3d &e
 
 //	markerPub.publish(m);
 }
-
-/// TODO  ******* TODO ****** TODO ****** TODO ****** TODO ****** TODO **********
-/// TODO  *																		*
-/// TODO  *																		*
-/// TODO  *	Prova a vedere se conviene NON routare i frame di ogni satellite	*
-/// TODO  *	ma lasciarli fissi e solamente trovare i vettori terra e velocita'	*
-/// TODO  *	In questo caso non servirebbe neanche fare conti complicati per		*
-/// TODO  *	trovare il centro della terra. (ora serve fare quat->rotationMatrix	*																*
-/// TODO  *	poi invertirla e moltiplicare										*
-/// TODO  *																		*
-/// TODO  *																		*
-/// TODO  ***********************************************************************
 
 
 ///
@@ -442,9 +435,9 @@ void OrbitPredictionNode::publishEarth()
 	m.pose.orientation.w = 1.0;
 
 	// Set the scale of the marker -- 1x1x1 here means 1m on a side
-	m.scale.x = EARTH_RADIUS * scale;
-	m.scale.y = EARTH_RADIUS * scale;
-	m.scale.z = EARTH_RADIUS * scale;
+	m.scale.x = 2 * EARTH_RADIUS * scale;
+	m.scale.y = 2 * EARTH_RADIUS * scale;
+	m.scale.z = 2 * EARTH_RADIUS * scale;
 
 	// Set the color -- be sure to set alpha to something non-zero!
 	m.color.r = 0.0f;

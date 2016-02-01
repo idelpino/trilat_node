@@ -38,7 +38,7 @@ void TrilaterationNode::measurementsCallback(const trilateration::satMeasurement
 
 void TrilaterationNode::process()
 {
-	estReceiver = tr.computePosition(measurements, SPEED_OF_LIGHT);
+	estReceiver = tr.computePosition(measurements);
 	std::cout << " ---> Estimation:\t" << estReceiver.toString() << std::endl;
 
 	// Sets the guess for the next simulation in the actual position

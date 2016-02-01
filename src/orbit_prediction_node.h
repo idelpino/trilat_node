@@ -14,7 +14,22 @@
 
 #include <Eigen/Geometry>
 
-
+/// TODO	TODO	TODO	TODO	TODO	TODO	TODO	TODO	TODO
+/// TODO	TODO	TODO	TODO	TODO	TODO	TODO	TODO	TODO
+/// TODO	TODO	TODO	TODO	TODO	TODO	TODO	TODO	TODO
+/// TODO	TODO	TODO	TODO	TODO	TODO	TODO	TODO	TODO
+///
+/// c'e' un po' di casino, una buona idea sarebbe quella di creare (o modificare
+/// lo struct gia esistente) una classe "Satellite" che contiene nome, posizione x y z,
+/// pseudorange, velocita', (timestamp?), etc. e lavorare con questa.
+/// Di conseguenza
+/// 1.modificare il messaggio ros
+/// 2.far si che ogni satellite sia identificato dal suo nome, e non dall'indice
+/// 3.far si che rinex reader mi restituisca sta roba. ora addirittura mi restituisce un
+///   gpstk::Triple come velocita', che fa cagare.
+/// 4.quando un satellite scompare dal campo visivo, elimino le robe che il suo publisher
+///   ha pubblicato come ultime
+///
 
 class OrbitPredictionNode
 {

@@ -11,8 +11,6 @@
 #include "../include/trilateration/src/trilateration.h"
 #include "../include/trilateration/src/structs.h"
 
-//TODO gestisci discorso velocita
-const double SPEED_OF_LIGHT = 3e8; // m / s
 
 class TrilaterationNode
 {

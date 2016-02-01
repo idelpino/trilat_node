@@ -14,6 +14,10 @@
 #include "trilateration/satMeasurement.h"
 #include "trilateration/satMeasurementArray.h"
 
+#include "iri_asterx1_gps/NavSatFix_ecef.h"
+#include "asterx1_node/SatPr.h"
+#include "asterx1_node/SatPrArray.h"
+
 // Trilateration library includes
 #include "../include/trilateration/src/trilateration.h"
 #include "../include/trilateration/src/structs.h"
@@ -96,8 +100,10 @@ protected:
 protected:
 	ros::NodeHandle nh;								// ROS node handle
 	ros::Publisher measurementsPub;					// Publisher for measurements
+	ros::Publisher observationsPub;					// Publisher for observations (int the new format, see asterx1_node)
 
 	std::vector<SatelliteMeasurement> measurements;	// Measures obtained from satellites
+	std::vector<int> satIDs;						// Satellite ID paired to measurements vector (bag solution, but i don't have time to change everything, it's just a quick test
 
 	bool fileFinished;
 

@@ -31,6 +31,8 @@ int main(int argc, char **argv)
 	int i = 0;
 	bool fileNotFinished = true;
 
+	int secondsPerEpoch = 30;
+
 	while ( ros::ok() )
 	{
 		op.publishEarth();
@@ -39,7 +41,7 @@ int main(int argc, char **argv)
 			cout << "\t";
 
 		// at the first time compute position from obs file
-		if(i%30  == 0 && fileNotFinished){
+		if(i % secondsPerEpoch  == 0 && fileNotFinished){
 			// visualize a sphere that represent earth
 
 			fileNotFinished = op.processNextEpoch();
