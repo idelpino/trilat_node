@@ -102,11 +102,11 @@ target_link_libraries(receiver_sim_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
 
 add_executable(trilateration_node ${SRCS_ROS_TRILATERATION_NODE} ${SRCS_TR_LIB})
 target_link_libraries(trilateration_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
-
+add_dependencies(trilateration_node trilateration_generate_messages_cpp)
 
 add_executable(rinex_reader_node ${SRCS_ROS_RINEX_READ_NODE} ${SRCS_TR_LIB})
 target_link_libraries(rinex_reader_node ${catkin_LIBRARIES} ${CERES_LIBRARIES} gpstk)
-
+add_dependencies(rinex_reader_node iri_common_drivers_msgs_generate_messages_cpp)
 
 add_executable(orbit_prediction_node ${SRCS_ROS_ORBIT_PREDICT_NODE} ${SRCS_RINEX_READER_LIB})
 target_link_libraries(orbit_prediction_node ${catkin_LIBRARIES} gpstk)

@@ -15,8 +15,7 @@
 #include "trilateration/satMeasurementArray.h"
 
 #include "iri_asterx1_gps/NavSatFix_ecef.h"
-#include "asterx1_node/SatPr.h"
-#include "asterx1_node/SatPrArray.h"
+#include "iri_common_drivers_msgs/SatellitePseudorangeArray.h"
 
 // Trilateration library includes
 #include "../include/trilateration/src/trilateration.h"

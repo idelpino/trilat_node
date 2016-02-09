@@ -14,7 +14,7 @@ RinexReaderNode::RinexReaderNode(char* path_obs, char* path_nav/*, char *path_me
 {
 	// Initialize measurements publisher
 	measurementsPub = nh.advertise<trilateration::satMeasurementArray>("/gps_measurements", 1000);
-	observationsPub = nh.advertise<asterx1_node::SatPrArray>("/sat_pseudoranges", 1000);
+	observationsPub = nh.advertise<iri_common_drivers_msgs::SatellitePseudorangeArray>("/sat_pseudoranges", 1000);
 	realFixPub = nh.advertise<iri_asterx1_gps::NavSatFix_ecef>("/real_fix", 5000);
 
 	// Initialize all the stuff related to gpstk
@@ -208,12 +208,12 @@ void RinexReaderNode::publishMeasurements()
 	trilateration::satMeasurement meas;
 	trilateration::satMeasurementArray msg;
 
-	asterx1_node::SatPrArray observation;
+	iri_common_drivers_msgs::SatellitePseudorangeArray observation;
 	
 
 	for (int i = 0; i < measurements.size(); ++i)
 	{
-		asterx1_node::SatPr ob;
+		iri_common_drivers_msgs::SatellitePseudorange ob;
 
 		ob.sat_id = satIDs[i];
 
