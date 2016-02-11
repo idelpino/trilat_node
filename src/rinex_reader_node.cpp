@@ -205,6 +205,12 @@ int RinexReaderNode::processNextEpoch()
 
 void RinexReaderNode::publishMeasurements()
 {
+	/*
+	 * TODO
+	 * manca da riempire i campi velocità
+	 * mancano i timestamp, (occhio che c'è il timestamp ros e il timestamp gps wnc+tow)
+	 */
+
 	trilateration::satMeasurement meas;
 	trilateration::satMeasurementArray msg;
 
