@@ -15,7 +15,7 @@ RinexReaderNode::RinexReaderNode(char* path_obs, char* path_nav/*, char *path_me
 	// Initialize measurements publisher
 	measurementsPub = nh.advertise<trilateration::satMeasurementArray>("/gps_measurements", 1000);
 	observationsPub = nh.advertise<iri_common_drivers_msgs::SatellitePseudorangeArray>("/sat_pseudoranges", 1000);
-	realFixPub = nh.advertise<iri_asterx1_gps::NavSatFix_ecef>("/real_fix", 5000);
+	realFixPub = nh.advertise<iri_common_drivers_msgs::NavSatFix_ecef>("/real_fix", 5000);
 
 	// Initialize all the stuff related to gpstk
 	gpstkInit();
@@ -190,7 +190,7 @@ int RinexReaderNode::processNextEpoch()
 	 * true means the one calculated with raimsolver by gpstk
 	 */
 	Receiver truePos = getReceiverECEF();
-	iri_asterx1_gps::NavSatFix_ecef estFixMsg;
+	iri_common_drivers_msgs::NavSatFix_ecef estFixMsg;
 	//TODO fill up header etc
 	estFixMsg.x = truePos.pos.getX();
 	estFixMsg.y = truePos.pos.getY();
